@@ -1,0 +1,62 @@
+name: Pull Request
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.8"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
+        run: |
+          sudo apt install libturbojpeg exiftool ffmpeg
+
+          python -m pip install pytest wheel pylint pylint-flask
+          pip install torch torchvision
+          pip install openmim
+          mim install mmcv
+
+          python setup.py bdist_wheel --universal
+          python -m pip install "dist/$(ls dist/*.whl | grep -oE '[^/]+\.whl')[torch]" --force-reinstall
+
+      - name: Lint with pylint
+        run: |
+          python -m pylint ${{ github.workspace }}/docsaidkit \
+            --rcfile=.github/workflows/.pylintrc \
+            --load-plugins pylint_flask \
+
+      - name: Test with pytest
+        run: |
+          python -m pip install pytest pytest-cov typeguard
+
+          # Test all
+          python -m pytest tests
+
+          # Report all
+          mkdir -p tests/coverage
+          python -m pytest -x \
+            --junitxml=tests/coverage/cov-jumitxml.xml \
+            --cov=docsaidkit tests | tee tests/coverage/cov.txt
+
+      - name: Pytest coverage comment
+        id: coverageComment
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: tests/coverage/cov.txt
+          junitxml-path: tests/coverage/cov-jumitxml.xml

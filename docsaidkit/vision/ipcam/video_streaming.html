@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>Video Streaming Demonstration</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 20px;
+                text-align: center;
+                transition: background-color 0.5s;
+            }
+
+            h1 {
+                color: #333;
+                margin-bottom: 30px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+                animation: colorchange 1s infinite;
+            }
+
+            #video-container {
+                display: flex;
+                justify-content: center;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                overflow: hidden;
+                background-color: #fff;
+                margin: 10px;
+                padding: 10px;
+            }
+
+            #video-stream {
+                max-width: 100%;
+                height: auto;
+                border: none;
+            }
+
+            @keyframes colorchange {
+                0% { color: #333; }
+                50% { color: #666; }
+                100% { color: #333; }
+            }
+
+            body:hover {
+                background-color: #e9e9e9;
+            }
+
+        </style>
+    </head>
+    <body>
+        <h1>Video Streaming Demonstration</h1>
+        <div id="video-container">
+            <img id="video-stream" src="{{ url_for('_video_feed') }}" alt="Video Stream">
+        </div>
+    </body>
+</html>

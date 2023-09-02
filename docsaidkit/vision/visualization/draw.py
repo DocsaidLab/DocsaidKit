@@ -45,7 +45,7 @@ def draw_box(
         if box.normalized:
             h, w = img.shape[:2]
             box = box.denormalize(w, h)
-        box = box.numpy()
+        box = box.convert('XYXY').numpy()
     elif not isinstance(box, np.ndarray):
         box = np.array(box)
     x1, y1, x2, y2 = box.astype(int)

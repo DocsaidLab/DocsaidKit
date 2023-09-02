@@ -1,4 +1,3 @@
-import math
 from typing import List, Tuple, Union
 
 import cv2
@@ -40,7 +39,7 @@ def imresize(
     interpolation = INTER.obj_to_enum(interpolation)
 
     raw_h, raw_w = img.shape[:2]
-    w, h = size
+    h, w = size
 
     # If only one dimension is given, calculate the other one maintaining
     # the aspect ratio.
@@ -116,7 +115,8 @@ def imrotate(
         rotated img: rotated img.
     '''
     bordertype = BORDER.obj_to_enum(bordertype)
-    bordervalue = (bordervalue,) * 3 if isinstance(bordervalue, int) else bordervalue
+    bordervalue = (bordervalue,) * \
+        3 if isinstance(bordervalue, int) else bordervalue
     interpolation = INTER.obj_to_enum(interpolation)
 
     h, w = img.shape[:2]
@@ -178,10 +178,12 @@ def imwarp_quadrangle(
         polygon = Polygon(polygon)
 
     if not isinstance(polygon, Polygon):
-        raise TypeError(f'Input type of polygon {type(polygon)} not supported.')
+        raise TypeError(
+            f'Input type of polygon {type(polygon)} not supported.')
 
     if len(polygon) != 4:
-        raise ValueError(f'Input polygon, which is not contain 4 points is invalid.')
+        raise ValueError(
+            f'Input polygon, which is not contain 4 points is invalid.')
 
     width, height = polygon.min_box_wh
     if width < height:
@@ -218,5 +220,6 @@ def imwarp_quadrangles(
         List[np.ndarray]: The transformed image.
     """
     if not isinstance(polygons, Polygons):
-        raise TypeError(f'Input type of polygons {type(polygons)} not supported.')
+        raise TypeError(
+            f'Input type of polygons {type(polygons)} not supported.')
     return [imwarp_quadrangle(img, poly) for poly in polygons]

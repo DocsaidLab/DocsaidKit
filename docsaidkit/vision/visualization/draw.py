@@ -1,13 +1,20 @@
+import os
 from typing import List, Tuple, Union
 
 import cv2
+import matplotlib
 import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 
 from ...structures import Box, Boxes, Polygon, Polygons
+from ...utils import get_curdir
 
 __all__ = [
-    'draw_box', 'draw_boxes', 'draw_polygon', 'draw_polygons',
+    'draw_box', 'draw_boxes', 'draw_polygon', 'draw_polygons', 'draw_text',
+    'generate_colors', 'draw_ocr_infos',
 ]
+
+DIR = get_curdir(__file__)
 
 
 _Color = Union[int, Tuple[int, int, int], np.ndarray]
@@ -135,7 +142,7 @@ def draw_polygon(
     if fillup:
         img = cv2.fillPoly(img, [polygon], color=color, **kwargs)
     else:
-        img = cv2.polylines(img, [polygon], isClosed=True, color=color, \
+        img = cv2.polylines(img, [polygon], isClosed=True, color=color,
                             thickness=thickness, **kwargs)
 
     return img
@@ -190,6 +197,153 @@ def draw_polygons(
         thickness = [thickness] * len(polygons)
 
     for polygon, c, t in zip(polygons, color, thickness):
-        draw_polygon(img, polygon, color=c, thickness=t, fillup=fillup, **kwargs)
+        draw_polygon(img, polygon, color=c, thickness=t,
+                     fillup=fillup, **kwargs)
 
     return img
+
+
+def draw_text(
+    img: np.ndarray,
+    text: str,
+    location: np.ndarray,
+    color: tuple = (0, 0, 0),
+    text_size: int = 12,
+    font_path: str = None,
+    **kwargs
+) -> np.ndarray:
+    """
+    Draw specified text on the given image at the provided location.
+
+    Args:
+        img (np.ndarray):
+            Image on which to draw the text.
+        text (str):
+            Text string to be drawn.
+        location (np.ndarray):
+            x, y coordinates on the image where the text should be drawn.
+        color (tuple, optional):
+            RGB values of the text color. Default is black (0, 0, 0).
+        text_size (int, optional):
+            Size of the text to be drawn. Default is 12.
+        font_path (str, optional):
+            Path to the font file to be used.
+            If not provided, a default font "NotoSansMonoCJKtc-VF.ttf" is used.
+        **kwargs:
+            Additional arguments for drawing, depending on the underlying
+            library or method used.
+
+    Returns:
+        np.ndarray: Image with the text drawn on it.
+    """
+    if isinstance(img, np.ndarray):
+        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+    draw = ImageDraw.Draw(img)
+
+    if font_path is None:
+        font_path = DIR / "NotoSansMonoCJKtc-VF.ttf"
+        if not font_path.exists():
+            os.system(
+                f"wget https://github.com/googlefonts/noto-cjk/raw/main/Sans/Variable/TTF/Mono/NotoSansMonoCJKtc-VF.ttf -O {font_path}"
+            )
+
+    font = ImageFont.truetype(str(font_path), size=text_size)
+
+    _, top, _, bottom = font.getbbox(text)
+    _, offset = font.getmask2(text)
+    text_height = bottom - top
+
+    offset_y = int(0.5 * (font.size - text_height) - offset[1])
+    location = location + (0, offset_y)
+    kwargs.update({'fill': color})
+    draw.text(location, text, font=font, **kwargs)
+    img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+
+    return img
+
+
+def generate_colors(n: int, scheme: str = 'hsv') -> List[tuple]:
+    """
+    Generates n different colors based on the chosen color scheme.
+    """
+    colors = []
+
+    if scheme == 'hsv':
+        colors = [matplotlib.colors.hsv_to_rgb(
+            (i / n, 1, 1)) for i in range(n)]
+
+    elif scheme == 'triadic':
+        base_hue = np.random.rand()
+        for i in range(n):
+            # Divide by 3 to get 120 degrees on the color wheel
+            hue = (base_hue + i / 3.0) % 1
+            colors.append(matplotlib.colors.hsv_to_rgb((hue, 1, 1)))
+
+    elif scheme == 'analogous':
+        base_hue = np.random.rand()
+        step = 0.05  # Small step for analogous colors
+        for i in range(n):
+            hue = (base_hue + i * step) % 1
+            colors.append(matplotlib.colors.hsv_to_rgb((hue, 1, 1)))
+
+    elif scheme == 'square':
+        base_hue = np.random.rand()
+        for i in range(n):
+            # Divide by 4 to get 90 degrees on the color wheel
+            hue = (base_hue + i / 4.0) % 1
+            colors.append(matplotlib.colors.hsv_to_rgb((hue, 1, 1)))
+
+    return [tuple(int(c * 255) for c in color) for color in colors]
+
+
+def draw_ocr_infos(
+    img: np.ndarray,
+    texts: List[str],
+    polygons: Polygons,
+    colors: tuple = None,
+    concat_axis: int = 1,
+    thicknesses: int = 2,
+) -> np.ndarray:
+    """
+    Draw the OCR results on the image.
+
+    Args:
+        img (np.ndarray):
+            The image to draw on.
+        texts (List[str]):
+            List of detected text strings.
+        polygons (D.Polygons):
+            List of polygons representing the boundaries of detected texts.
+        colors (tuple, optional):
+            RGB values for the drawing color.
+            If not provided, generates unique colors for each text.
+        concat_axis (int, optional):
+            Axis for concatenating the original image and the annotated one.
+            Default is 1 (horizontal).
+        thicknesses (int, optional):
+            Thickness of the drawn polygons.
+
+    Returns:
+        np.ndarray: An image with the original and annotated images concatenated.
+    """
+    if colors is None:
+        colors = generate_colors(len(texts), scheme='square')
+
+    export_img1 = draw_polygons(
+        img, polygons, color=colors, thickness=thicknesses)
+    export_img2 = draw_polygons(
+        np.zeros_like(img) + 255,
+        polygons,
+        color=colors,
+        thickness=thicknesses
+    )
+
+    for text, region in zip(texts, polygons):
+        text_size = max(int(0.65 * min(region.min_box_wh)), 8)
+        export_img2 = draw_text(
+            export_img2, text, region.numpy()[0],
+            text_size=text_size,
+        )
+
+    return np.concatenate([export_img1, export_img2], axis=concat_axis)

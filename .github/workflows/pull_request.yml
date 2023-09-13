@@ -9,11 +9,11 @@ on:
 jobs:
   test:
     name: Run Tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, unicorn]
     strategy:
       matrix:
         python-version:
-          - "3.8"
+          - "3.10"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
           pip install openmim
           mim install mmcv
 
-          python setup.py bdist_wheel --universal
+          python setup.py bdist_wheel
           python -m pip install "dist/$(ls dist/*.whl | grep -oE '[^/]+\.whl')[torch]" --force-reinstall
 
       - name: Lint with pylint

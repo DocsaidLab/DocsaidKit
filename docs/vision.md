@@ -63,7 +63,7 @@
   - [`generate_colors`](#4-generate_colors)
   - [`draw_ocr_infos`](#5-draw_ocr_infos)
 
-## [Functionals (`functionals.py`)](functionals.py)
+## [Functionals (`functionals.py`)](../docsaidkit/vision/functionals.py)
 
 這個模塊提供了一套針對影像處理的基本功能性函數。
 
@@ -143,7 +143,7 @@
   - `threth`: 二值化閾值，預設為 cv2.THRESH_BINARY。
   - `color_base`: 色彩基礎，預設為 'BGR'。
 
-## [Geometric Transformations (`geometric.py`)](geometric.py)
+## [Geometric Transformations (`geometric.py`)](../docsaidkit/vision/geometric.py)
 
 這個模塊提供了一套針對影像進行幾何變換的功能性函數。
 
@@ -192,7 +192,7 @@
   - `img`: 輸入的 Numpy 影像。
   - `polygons`: 透視變換的四邊形列表。
 
-## [Image Processing (`improc.py`)](improc.py)
+## [Image Processing (`improc.py`)](../docsaidkit/vision/improc.py)
 
 這個模塊專注於影像的讀取、寫入、編碼、解碼以及與其他格式之間的轉換。
 
@@ -261,7 +261,7 @@
 ### 20. `imwrite`
 - **功能**: 將 Numpy 影像寫入指定的路徑。
 
-## [Morphology (`morphology.py`)](morphology.py)
+## [Morphology (`morphology.py`)](../docsaidkit/vision/morphology.py)
 
 這個模塊專注於形態學操作，它是影像處理中的一個重要部分，主要用於提取影像組件、修復和分隔等。
 
@@ -310,7 +310,7 @@
 
 例如，如果你想對一個影像 `img` 進行膨脹操作，只需調用 `imdilate(img)`。如果你想使用其他核大小或形狀，只需修改 `ksize` 和 `kstruct` 參數。
 
-## [IP Camera (`ipcam`)](./ipcam/)
+## [IP Camera (`ipcam`)](../docsaidkit/vision/ipcam/)
 
 這個模塊提供了從 IP 攝像頭獲取視頻流並將其顯示在 web 應用中的功能。
 
@@ -361,7 +361,7 @@
 2. 初始化 `WebDemo` 類，指定 IP 攝像頭的 IP 地址。
 3. 調用 `WebDemo` 類的 `run` 方法，啟動 Flask web 服務。
 
-## [Video Tools (`videotools`)](./videotools/)
+## [Video Tools (`videotools`)](../docsaidkit/vision/videotools/)
 
 這個模塊專注於處理視頻文件，主要是將視頻轉換成帧。
 
@@ -401,7 +401,7 @@ frames = video2frames('my_video.mp4')
 - 使用多線程可以加快提取速度，但需要注意不要過度使用，以免耗盡系統資源。
 - 如果選擇的開始和結束時間超出了視頻的長度，則會引發異常。
 
-## [Visualization (`visualization`)](./visualization/)
+## [Visualization (`visualization`)](../docsaidkit/vision/visualization/)
 
 這個模塊提供了一套專門針對圖像視覺化的功能，適合用於物體檢測或 OCR 的情境。
 

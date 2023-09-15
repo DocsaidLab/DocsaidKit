@@ -1,13 +1,10 @@
 # Other functions
 
-
-## Utils 模組詳細說明
-
-該Utils模組提供了多個實用的工具函數和類，這些函數和類旨在方便和加速日常的程式開發和數據處理工作。
+Utils 模組提供了多個實用的工具函數和類，這些函數和類旨在方便和加速日常的程式開發和數據處理工作。
 
 ---
 
-### custom-path.py
+### [custom-path.py](../docsaidkit/utils/custom_path.py)
 
 **功能**: 提供與文件和目錄路徑操作相關的功能。
 
@@ -30,7 +27,7 @@
 
 ---
 
-### custom-tqdm.py
+### [custom-tqdm.py](../docsaidkit/utils/custom_tqdm.py)
 
 **功能**: 提供一個自定義的進度條功能。
 
@@ -40,7 +37,7 @@
 
 ---
 
-### files-utils.py
+### [files-utils.py](../docsaidkit/utils/files_utils.py)
 
 **功能**: 提供文件操作的實用函數。
 
@@ -60,7 +57,7 @@
 
 ---
 
-### powerdict.py
+### [powerdict.py](../docsaidkit/utils/powerdict.py)
 
 **功能**: 提供操作和管理字典的強大功能。
 
@@ -70,7 +67,7 @@
 
 ---
 
-### time.py
+### [time.py](../docsaidkit/utils/time.py)
 
 **功能**: 提供與時間相關的工具函數。
 
@@ -80,7 +77,7 @@
 
 ---
 
-### utils.py
+### [utils.py](../docsaidkit/utils/utils.py)
 
 **功能**: 提供多種通用的工具函數。
 
@@ -102,7 +99,3 @@
             - `color`: 文本的顏色。
             - `fmt`: 文本的格式。
         - **返回**: 著色後的文本字符串。
-
----
-
-這只是一個簡要的說明和教程。為了更深入地了解每個函數和類的具體使用方法和功能，建議開發者參考源代碼和相關文檔。

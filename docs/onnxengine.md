@@ -19,7 +19,7 @@
     - [使用範例](#使用範例)
 ---
 
-## [ONNXEngine (`engine.py`)](engine.py)
+## [ONNXEngine (`engine.py`)](../docsaidkit/onnxengine/engine.py)
 
 這個模塊是為了方便使用 `onnxruntime` 進行模型推理，並支持 CUDA 和 CPU 兩種後端。
 
@@ -98,7 +98,7 @@
 
 ---
 
-## [metadata (`metadata.py`)](metadata.py)
+## [metadata (`metadata.py`)](../docsaidkit/onnxengine/metadata.py)
 
 這個模塊提供了操作 ONNX 模型的元數據的工具，允許用戶讀取和寫入自定義元數據。它使用 `onnxruntime` 和 `onnx` 庫來處理模型的讀取和存儲。
 

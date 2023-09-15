@@ -195,31 +195,31 @@ DocsaidKit 的使用方式旨在為研究人員和開發者提供一個簡單的
 
 `structures` 模塊是 DocsaidKit 中的一個重要模塊，用於表示和處理一般化的框架（如邊界框）的格式和操作。
 
-詳細說明請參考 [Structure](./docsaidkit/structures/README.md)。
+詳細說明請參考 [Structure](./docs/structure.md)。
 
 ### Vision
 
 `vision` 模塊包含計算機視覺相關的功能，例如影像處理、視覺幾何、視覺效果等相關功能。。
 
-詳細說明請參考 [Vision](./docsaidkit/vision/README.md)。
+詳細說明請參考 [Vision](./docs/vision.md)。
 
 ### ONNXEngine
 
 `onnxengine` 模塊提供 ONNX 推論相關的功能，支援 ONNX 格式的模型。
 
-詳細說明請參考 [ONNXEngine](./docsaidkit/onnxengine/README.md)。
+詳細說明請參考 [ONNXEngine](./docs/onnxengine.md)。
 
 ### Pytorch
 
 `torch` 模塊與 PyTorch 有關，內含神經網絡結構、優化器等相關功能。
 
-詳細說明請參考 [Pytorch](./docsaidkit/torch/README.md)。
+詳細說明請參考 [Pytorch](./docs/pytorch.md)。
 
 ### Others
 
 `utils` 模塊提供各種工具函數，包括文件處理、時間處理等常用功能。
 
-詳細說明請參考 [Utils](./docsaidkit/utils/README.md)。
+詳細說明請參考 [Utils](./docs/utils.md)。
 
 ## Pytest 測試
 

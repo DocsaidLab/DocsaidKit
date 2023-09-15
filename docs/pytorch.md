@@ -24,7 +24,7 @@
 
 ---
 
-## [Backbone](./bacobone/)
+## [Backbone](../docsaidkit/torch/backbone/)
 
 - **目的**:
   此模組的主要目的是提供基礎的網絡結構，如：ResNet, VGG 等，並透過 `timm` 庫來支持多種預訓練的模型。
@@ -66,7 +66,7 @@
 
 ---
 
-## [EfficientDet](./efficientdet/)
+## [EfficientDet](../docsaidkit/torch/efficientdet/)
 
 - **目的**:
   此模組是為了實現 EfficientDet 物件檢測模型，一種現代的，高效的目標檢測結構。
@@ -106,7 +106,7 @@ model = EfficientDet(compound_coef=2, pretrained=True)
 
 ---
 
-## [Neck](./neck/)
+## [Neck](../docsaidkit/torch/neck/)
 
 - **目的**:
   此模組是為了實現不同的特徵金字塔網絡，用於目標檢測或語義分割任務中對特徵進行上下採樣和融合。
@@ -152,7 +152,7 @@ all_necks = list_necks()
 
 ---
 
-## [NN (Neural Networks)](./nn/)
+## [NN (Neural Networks)](../docsaidkit/torch/nn/)
 
 **目的**:
 這個模塊的目的是包含各種常用的深度學習模塊和組件。
@@ -178,7 +178,7 @@ all_necks = list_necks()
 
 ---
 
-## [Optim](./optim/)
+## [Optim](../docsaidkit/torch/optim/)
 
 **目的**:
 
@@ -189,7 +189,7 @@ all_necks = list_necks()
 
 ---
 
-## [Transformers](./transformers/)
+## [Transformers](../docsaidkit/torch/transformers/)
 
 - **目的**: 此模組的主要目的是為深度學習模型提供各種基於Transformer的模型架構。這些架構在許多自然語言處理和計算機視覺的應用中都取得了卓越的成果。
 
@@ -205,7 +205,7 @@ all_necks = list_necks()
 
 ---
 
-## [Utils](./utils/)
+## [Utils](../docsaidkit/torch/utils/)
 
 - **目的**: 此模組旨在提供各種工具函數，以支援上述的模塊。
 

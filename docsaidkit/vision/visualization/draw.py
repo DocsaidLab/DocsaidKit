@@ -304,6 +304,7 @@ def draw_ocr_infos(
     colors: tuple = None,
     concat_axis: int = 1,
     thicknesses: int = 2,
+    font_path: str = None,
 ) -> np.ndarray:
     """
     Draw the OCR results on the image.
@@ -323,6 +324,10 @@ def draw_ocr_infos(
             Default is 1 (horizontal).
         thicknesses (int, optional):
             Thickness of the drawn polygons.
+            Default is 2.
+        font_path (str, optional):
+            Path to the font file to be used.
+            If not provided, a default font "NotoSansMonoCJKtc-VF.ttf" is used.
 
     Returns:
         np.ndarray: An image with the original and annotated images concatenated.
@@ -344,6 +349,7 @@ def draw_ocr_infos(
         export_img2 = draw_text(
             export_img2, text, region.numpy()[0],
             text_size=text_size,
+            font_path=font_path
         )
 
     return np.concatenate([export_img1, export_img2], axis=concat_axis)

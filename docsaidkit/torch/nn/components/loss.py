@@ -2,15 +2,19 @@ from typing import Union
 
 import torch
 import torch.nn as nn
+from mmdet.models.losses import (CIoULoss, DiceLoss, DIoULoss, EIoULoss,
+                                 FocalLoss, GIoULoss, IoULoss)
 from torch.nn.modules.loss import (BCELoss, BCEWithLogitsLoss,
                                    CrossEntropyLoss, CTCLoss, KLDivLoss,
                                    L1Loss, MSELoss, SmoothL1Loss)
 
 __all__ = [
-    'build_loss', 'AWingLoss', 'WeightedAWingLoss',
-    'BCELoss', 'BCEWithLogitsLoss', 'CrossEntropyLoss',
-    'CTCLoss', 'KLDivLoss', 'L1Loss', 'MSELoss', 'SmoothL1Loss',
+    'build_loss', 'AWingLoss', 'WeightedAWingLoss', 'FocalLoss', 'CIoULoss',
+    'BCELoss', 'BCEWithLogitsLoss', 'CrossEntropyLoss', 'DiceLoss', 'DIoULoss',
+    'CTCLoss', 'KLDivLoss', 'L1Loss', 'MSELoss', 'SmoothL1Loss', 'IoULoss',
+    'GIoULoss', 'EIoULoss'
 ]
+
 
 class AWingLoss(nn.Module):
 
@@ -44,11 +48,13 @@ class AWingLoss(nn.Module):
         diff = torch.abs(targets - preds)
         case1_mask = diff < self.theta
         case2_mask = ~case1_mask
-        loss_case1 = self.omega * torch.log1p((diff[case1_mask] / self.epsilon) ** self.alpha)
+        loss_case1 = self.omega * \
+            torch.log1p((diff[case1_mask] / self.epsilon) ** self.alpha)
         A = self.omega * (1 / (1 + (self.theta / self.epsilon)**(self.alpha - targets))) \
             * (self.alpha - targets) * ((self.theta / self.epsilon)**(self.alpha - targets - 1)) \
             * (1 / self.epsilon)
-        C = self.theta * A - self.omega * torch.log1p((self.theta / self.epsilon)**(self.alpha - targets))
+        C = self.theta * A - self.omega * \
+            torch.log1p((self.theta / self.epsilon)**(self.alpha - targets))
         loss_case2 = A[case2_mask] * diff[case2_mask] - C[case2_mask]
         loss_matrix = torch.zeros_like(preds)
         loss_matrix[case1_mask] = loss_case1

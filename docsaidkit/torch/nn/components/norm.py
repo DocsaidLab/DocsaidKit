@@ -38,7 +38,8 @@ class LayerNorm2d(nn.LayerNorm):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = x.permute(0, 2, 3, 1)
-        x = F.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
+        x = F.layer_norm(x, self.normalized_shape,
+                         self.weight, self.bias, self.eps)
         x = x.permute(0, 3, 1, 2)
         return x
 
@@ -46,5 +47,6 @@ class LayerNorm2d(nn.LayerNorm):
 def build_norm(name: str, **options) -> Union[nn.Module, None]:
     cls = globals().get(name, None)
     if cls is None:
-        raise ValueError(f'Normalization named {name} is not supported. Available options: {__all__}')
+        raise ValueError(
+            f'Normalization named {name} is not supported. Available options: {__all__}')
     return cls(**options)

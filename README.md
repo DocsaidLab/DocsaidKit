@@ -178,9 +178,11 @@ DocsaidKit 的目標是簡化深度學習和計算機視覺的開發過程，並
 
     - 若需要 OpenMMLab 支持：
 
+      參考 [OpenMMLab 安裝指南](https://mmcv.readthedocs.io/en/latest/get_started/installation.html)
+
       ```bash
       pip install openmim
-      mim install mmcv==2.0.0 -f https://download.openmmlab.com/mmcv/dist/cpu/torch2.0/index.html
+      mim install mmcv mmdet mmengine
       ```
 
 希望這份指南可以協助您順利地完成 DocsaidKit 的安裝！如有任何疑問或需要進一步的說明，請查看官方文檔或與我們聯絡。

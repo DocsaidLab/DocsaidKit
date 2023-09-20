@@ -263,36 +263,46 @@ def draw_text(
     return img
 
 
+def generate_colors_from_cmap(n: int, scheme: str) -> List[tuple]:
+    cm = matplotlib.cm.get_cmap(scheme)
+    return [cm(i/n)[:-1] for i in range(n)]
+
+
+def generate_triadic_colors(n: int) -> List[tuple]:
+    base_hue = np.random.rand()
+    return [matplotlib.colors.hsv_to_rgb(((base_hue + i / 3.0) % 1, 1, 1)) for i in range(n)]
+
+
+def generate_analogous_colors(n: int) -> List[tuple]:
+    base_hue = np.random.rand()
+    step = 0.05
+    return [matplotlib.colors.hsv_to_rgb(((base_hue + i * step) % 1, 1, 1)) for i in range(n)]
+
+
+def generate_square_colors(n: int) -> List[tuple]:
+    base_hue = np.random.rand()
+    return [matplotlib.colors.hsv_to_rgb(((base_hue + i / 4.0) % 1, 1, 1)) for i in range(n)]
+
+
 def generate_colors(n: int, scheme: str = 'hsv') -> List[tuple]:
     """
     Generates n different colors based on the chosen color scheme.
     """
-    colors = []
+    color_generators = {
+        'triadic': generate_triadic_colors,
+        'analogous': generate_analogous_colors,
+        'square': generate_square_colors
+    }
 
-    if scheme == 'hsv':
-        colors = [matplotlib.colors.hsv_to_rgb(
-            (i / n, 1, 1)) for i in range(n)]
-
-    elif scheme == 'triadic':
-        base_hue = np.random.rand()
-        for i in range(n):
-            # Divide by 3 to get 120 degrees on the color wheel
-            hue = (base_hue + i / 3.0) % 1
-            colors.append(matplotlib.colors.hsv_to_rgb((hue, 1, 1)))
-
-    elif scheme == 'analogous':
-        base_hue = np.random.rand()
-        step = 0.05  # Small step for analogous colors
-        for i in range(n):
-            hue = (base_hue + i * step) % 1
-            colors.append(matplotlib.colors.hsv_to_rgb((hue, 1, 1)))
-
-    elif scheme == 'square':
-        base_hue = np.random.rand()
-        for i in range(n):
-            # Divide by 4 to get 90 degrees on the color wheel
-            hue = (base_hue + i / 4.0) % 1
-            colors.append(matplotlib.colors.hsv_to_rgb((hue, 1, 1)))
+    if scheme in color_generators:
+        colors = color_generators[scheme](n)
+    else:
+        try:
+            colors = generate_colors_from_cmap(n, scheme)
+        except ValueError:
+            print(
+                f"Color scheme '{scheme}' not recognized. Returning empty list.")
+            colors = []
 
     return [tuple(int(c * 255) for c in color) for color in colors]
 

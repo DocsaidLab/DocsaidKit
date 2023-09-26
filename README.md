@@ -1,12 +1,5 @@
 # DocsaidKit
 
-DocsaidKit 是我們設計的核心 Python 套件。
-
-DocsaidKit 整合了 [PyTorch-Lightning](https://www.pytorchlightning.ai/)，從而簡化模型的訓練和推理流程。它支持資料加載、模型訓練及評估，使我們能有效利用 PyTorch-Lightning 的功能，如分佈式訓練、混合精度訓練及模型儲存技術。此外，DocsaidKit 集成了 [ONNXRuntime](https://onnxruntime.ai/)，一款專為 ONNX 模型設計的運行時引擎。這使得技術團隊可以進行模型優化和部署，確保模型在不同硬體平台上的性能。在電腦視覺領域，DocsaidKit 整合了 [MMCV](https://github.com/open-mmlab/mmcv) 的功能。通過 MMCV，工程師能接觸到多種視覺模型和資料集，輔助電腦視覺的研究和開發。DocsaidKit 也融入了 [timm](https://github.com/rwightman/pytorch-image-models)、[hugging face](https://huggingface.co/) 等套件的部分功能，擴展了模型的應用範疇，涵蓋從自然語言處理到圖像識別的需求。
-
-
-總之，我們希望這套工具能為開發者提供一個統一的工作流程，使模型的開發和部署變得更為直接，使他們能充分利用 PyTorch Lightning、ONNX Runtime、MMCV 以及其他套件的功能。對於希望深入了解 DocsaidKit 功能的開發者，我們提供了一系列的文檔和資源，供開發者查閱。
-
 ## 目錄
 
 - [介紹](#介紹)
@@ -29,7 +22,7 @@ DocsaidKit 整合了 [PyTorch-Lightning](https://www.pytorchlightning.ai/)，從
 
 ## 介紹
 
-**DocsaidKit** 是一個 Python 深度學習工具箱，專為研究人員和開發者設計，以支持深度學習和計算機視覺相關的項目和研究。
+**DocsaidKit** 是一個 Python 深度學習工具箱，是我們內部開發用的核心 Python 套件。其內容是我們內部的開發者共同設計撰寫，以支持深度學習和計算機視覺相關的項目和研究。我們希望這套工具能為組織內的開發者提供一個統一的工作流程，使模型的開發和部署變得更為直接。
 
 DocsaidKit 的結構分為以下主要模組：
 
@@ -81,6 +74,8 @@ DocsaidKit 的目標是簡化深度學習和計算機視覺的開發過程，並
 完成先決條件後，您可以選擇以下的安裝方式：
 
 #### 通用方式：
+
+補充：本套件僅提供內部的 Pypi 服務，若您是外部使用者，請直接使用 git clone 並使用 setup.py 安裝。
 
 1. **通過 PyPi (推薦)**:
 
@@ -176,7 +171,7 @@ DocsaidKit 的目標是簡化深度學習和計算機視覺的開發過程，並
       pip install torch torchvision
       ```
 
-    - 若需要 OpenMMLab 支持：
+    - 目前我們沒有整合 OpenMMLab 相關內容，但若您有個人需求，可以依循下列方式安裝：
 
       參考 [OpenMMLab 安裝指南](https://mmcv.readthedocs.io/en/latest/get_started/installation.html)
 
@@ -235,21 +230,50 @@ python -m pytest tests
 
 ## CI/CD
 
-DocsaidKit 遵循持續集成（CI）和持續交付（CD）的最佳實踐。我們在每次代碼提交時，都會自動運行測試和構建流程，確保代碼的質量和穩定性。
+**DocsaidKit** 專案嚴格遵循持續整合（CI）與持續交付（CD）的最佳實務，以確保程式碼的品質和專案的穩定性。我們利用 [GitHub Actions](https://github.com/features/actions) 作為主要的 CI/CD 工具，自動化地執行程式碼檢查、測試和發佈流程。
 
-目前，我們使用 [GitHub Actions](https://github.com/features/actions) 作為 CI/CD 工具。每當有新的代碼提交或合併請求時，GitHub Actions 會自動觸發，執行預定義的工作流程。
+### 持續整合 (CI)
 
-### 持續集成 (CI)
+我們的持續整合流程目的是確保所有程式碼提交和合併請求都能達到預設的品質標準。以下是 CI 流程中的主要步驟：
 
-- 自動代碼風格檢查
-- 單元測試
-- 整合測試
+1. **程式碼檢出**：
+   - 取得最新的程式碼，確保測試和建構是基於最新的程式碼更改。
+
+2. **環境設置**：
+   - 根據需要的 Python 版本和操作系統設置運行環境。
+
+3. **依賴安裝**：
+   - 安裝必要的系統依賴和 Python 依賴套件，為後續的測試和建構步驟做好準備。
+
+4. **程式碼品質檢查**：
+   - 使用 `pylint` 對程式碼進行靜態分析，檢查程式碼的品質和風格。
+
+5. **單元測試和整合測試**：
+   - 通過 `pytest` 執行單元測試和整合測試，確保程式碼的功能正確性和穩定性。
+   - 生成測試覆蓋率報告，並通過 GitHub Actions 將覆蓋率資訊回傳給開發團隊。
 
 ### 持續交付 (CD)
 
-- 自動構建和打包
-- 自動發布到 PyPI 和其他平台
+我們的持續交付流程旨在自動化建構和發佈過程，確保高效、準確地將新版本交付給使用者。以下是 CD 流程中的主要步驟：
+
+1. **版本號更新**：
+   - 根據輸入的版本標籤自動更新程式碼中的版本號。
+
+2. **建構和打包**：
+   - 自動化建構 Python wheel 包，方便分發和安裝。
+   - 使用 `twine` 工具將建構好的 wheel 包上傳到私有倉庫。
+
+3. **建立發佈**：
+   - 在 GitHub 上建立一個新的 release，填寫版本資訊和發佈說明。
+   - 上傳建構好的 wheel 包作為 release 的附件，方便使用者下載。
+
+4. **清理建構環境**：
+   - 清理建構產生的臨時檔案和目錄，保持建構環境的整潔。
+
+透過以上的自動化 CI/CD 流程，**DocsaidKit** 專案能夠在每次程式碼更新時自動驗證程式碼品質，同時在新版本準備好時自動完成建構和發佈流程。這不僅提高了開發和發佈的效率，也確保了專案的品質和穩定性。
 
 ---
 
-希望以上說明可以幫助使用者更加熟悉 DocsaidKit。如果遇到任何問題或需要進一步的支持，請查看我們的 [GitHub 存儲庫](https://github.com/DocsaidLab/DocsaidKit) 。
+希望以上的說明能讓使用者對 DocsaidKit 有更深的了解。
+
+如果遇到任何問題或需要進一步的支援，歡迎瀏覽我們的 [GitHub 儲存庫](https://github.com/DocsaidLab/DocsaidKit)。

@@ -29,9 +29,6 @@ jobs:
 
           python -m pip install pytest wheel pylint pylint-flask
           pip install torch torchvision
-          pip install openmim
-          mim install mmcv
-
           python setup.py bdist_wheel
           python -m pip install "dist/$(ls dist/*.whl | grep -oE '[^/]+\.whl')[torch]" --force-reinstall
 

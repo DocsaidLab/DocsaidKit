@@ -1,3 +1,4 @@
+from .custom_opencc import *
 from .custom_path import *
 from .custom_tqdm import *
 from .files_utils import *

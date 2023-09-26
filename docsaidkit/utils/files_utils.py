@@ -116,7 +116,8 @@ def get_files(
     # checking folders
     folder = Path(folder)
     if not folder.is_dir():
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), str(folder))
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), str(folder))
 
     if not isinstance(suffix, (str, list, tuple)) and suffix is not None:
         raise TypeError('suffix must be a string, list or tuple.')
@@ -134,7 +135,7 @@ def get_files(
     files = []
     for f in Tqdm(files_gen, leave=False):
         if suffix is None or (ignore_letter_case and f.suffix.lower() in suffix) \
-            or (not ignore_letter_case and f.suffix in suffix):
+                or (not ignore_letter_case and f.suffix in suffix):
             files.append(f.absolute())
 
     if not return_pathlib:

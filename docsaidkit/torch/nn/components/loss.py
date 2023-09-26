@@ -2,17 +2,14 @@ from typing import Union
 
 import torch
 import torch.nn as nn
-from mmdet.models.losses import (CIoULoss, DiceLoss, DIoULoss, EIoULoss,
-                                 FocalLoss, GIoULoss, IoULoss)
 from torch.nn.modules.loss import (BCELoss, BCEWithLogitsLoss,
                                    CrossEntropyLoss, CTCLoss, KLDivLoss,
                                    L1Loss, MSELoss, SmoothL1Loss)
 
 __all__ = [
-    'build_loss', 'AWingLoss', 'WeightedAWingLoss', 'FocalLoss', 'CIoULoss',
-    'BCELoss', 'BCEWithLogitsLoss', 'CrossEntropyLoss', 'DiceLoss', 'DIoULoss',
-    'CTCLoss', 'KLDivLoss', 'L1Loss', 'MSELoss', 'SmoothL1Loss', 'IoULoss',
-    'GIoULoss', 'EIoULoss'
+    'build_loss', 'AWingLoss', 'WeightedAWingLoss',
+    'BCELoss', 'BCEWithLogitsLoss', 'CrossEntropyLoss',
+    'CTCLoss', 'KLDivLoss', 'L1Loss', 'MSELoss', 'SmoothL1Loss',
 ]
 
 

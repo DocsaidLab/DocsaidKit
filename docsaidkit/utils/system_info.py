@@ -6,7 +6,7 @@ import psutil
 import requests
 
 __all__ = [
-    "get_package_versions", "get_gpu_cuda_versions", "get_system_info"
+    "get_package_versions", "get_gpu_cuda_versions", "get_system_info",
     "get_cpu_info", "get_external_ip"
 ]
 

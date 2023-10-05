@@ -25,12 +25,10 @@ jobs:
 
       - name: Install packages
         run: |
-          sudo apt install libturbojpeg exiftool ffmpeg
-
           python -m pip install pytest wheel pylint pylint-flask
-          pip install torch torchvision
           python setup.py bdist_wheel
-          python -m pip install "dist/$(ls dist/*.whl | grep -oE '[^/]+\.whl')[torch]" --force-reinstall
+          wheel_file=$(echo dist/*.whl)
+          python -m pip install "${wheel_file}[torch]" --force-reinstall
 
       - name: Lint with pylint
         run: |

@@ -40,7 +40,7 @@ jobs:
         with:
           branch: ${{ github.event.inputs.branch }}
           message: "[C] Update python version"
-          github_token: ${{ secrets.DOCSAID_CICD_FROM_UTMOSTOF9 }}
+          github_token: ${{ secrets.CI_PAT }}
 
       - name: Build wheel
         run: |

@@ -10,7 +10,7 @@ fail-under=10.0
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=CVS
+ignore=CVS,cpuinfo.py,system_info.py
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
@@ -97,7 +97,6 @@ enable=
     E1139,E1200,E1201,E1205,E1206,
     E1300,E1301,E1302,E1303,E1304,
     E1305,E1306,E1310,E1700,E1701,
-
 
 [REPORTS]
 

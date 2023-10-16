@@ -95,10 +95,14 @@ class Polygon:
             array = np.array(array, dtype='float32')
         if isinstance(array, Polygon):
             array = array.numpy()
-        cond1 = isinstance(array, np.ndarray) and array.ndim == 3 and array.shape[1] == 1
-        cond2 = isinstance(array, np.ndarray) and array.ndim == 2 and array.shape[1] == 2
-        cond3 = isinstance(array, np.ndarray) and array.ndim == 1 and len(array) == 0
-        cond4 = isinstance(array, np.ndarray) and array.ndim == 1 and len(array) == 2
+        cond1 = isinstance(
+            array, np.ndarray) and array.ndim == 3 and array.shape[1] == 1
+        cond2 = isinstance(
+            array, np.ndarray) and array.ndim == 2 and array.shape[1] == 2
+        cond3 = isinstance(
+            array, np.ndarray) and array.ndim == 1 and len(array) == 0
+        cond4 = isinstance(
+            array, np.ndarray) and array.ndim == 1 and len(array) == 2
         cond5 = isinstance(array, self.__class__)
         if not (cond1 or cond2 or cond3 or cond4 or cond5):
             raise TypeError(f'Input array must be {_Polygon}.')
@@ -201,7 +205,8 @@ class Polygon:
             3 -> (bevel)
         These values are also enumerated by the object shapely.geometry.JOIN_STYLE
         """
-        poly = _Polygon_shapely(self._array).buffer(distance, join_style=join_style)
+        poly = _Polygon_shapely(self._array).buffer(
+            distance, join_style=join_style)
 
         if not poly.exterior.is_empty:
             pts = np.zeros_like(self._array)
@@ -250,7 +255,8 @@ class Polygon:
         regarded as a polygon. Defaults to 3.
         """
         if not isinstance(threshold, int):
-            raise TypeError(f'Input threshold type error, expected "int", got "{type(threshold)}".')
+            raise TypeError(
+                f'Input threshold type error, expected "int", got "{type(threshold)}".')
         return len(self) < threshold
 
     @property
@@ -323,7 +329,8 @@ class Polygons:
 
     def __init__(self, polygons: _Polygons, normalized: bool = False):
         if not isinstance(polygons, (list, np.ndarray)):
-            raise TypeError(f'Input type error: "{polygons}", must be list or np.ndarray type.')
+            raise TypeError(
+                f'Input type error: "{polygons}", must be list or np.ndarray type.')
         self.normalized = normalized
         self._polygons = [Polygon(p, normalized) for p in polygons]
 
@@ -366,7 +373,8 @@ class Polygons:
                 item = np.argwhere(item).flatten()
             output = Polygons([self._polygons[i] for i in item])
         else:
-            raise TypeError('Input item type error, expected to be int, list, ndarray or slice.')
+            raise TypeError(
+                'Input item type error, expected to be int, list, ndarray or slice.')
         return output
 
     def is_empty(self, threshold: int = 3) -> np.ndarray:
@@ -490,3 +498,40 @@ class Polygons:
     @property
     def min_box_wh(self) -> np.ndarray:
         return np.array([poly.min_box_wh for poly in self._polygons])
+
+    @classmethod
+    def from_image(
+        cls,
+        image: np.ndarray,
+        mode: int = cv2.RETR_EXTERNAL,
+        method: int = cv2.CHAIN_APPROX_SIMPLE
+    ) -> "Polygons":
+        if not isinstance(image, np.ndarray):
+            raise TypeError('Input image must be a np.ndarray.')
+        contours, _ = cv2.findContours(image, mode=mode, method=method)
+        if len(contours) > 0:
+            contours = [c for c in contours if c.shape[0] > 1]
+        return cls(list(contours))
+
+    @classmethod
+    def cat(cls, polygons_list: List["Polygons"]) -> "Polygons":
+        """
+        Concatenates a list of Polygon into a single Polygons.
+        Returns:
+            Polygon: the concatenated Polygon
+        """
+        if not isinstance(polygons_list, list):
+            raise TypeError('Given polygon_list should be a list.')
+
+        if len(polygons_list) == 0:
+            raise ValueError('Given polygon_list is empty.')
+
+        if not all(isinstance(polygons, Polygons) for polygons in polygons_list):
+            raise TypeError(
+                'All type of elements in polygon_list must be Polygon.')
+
+        _polygons = []
+        for polys in polygons_list:
+            _polygons.extend(polys._polygons)
+
+        return cls(_polygons)

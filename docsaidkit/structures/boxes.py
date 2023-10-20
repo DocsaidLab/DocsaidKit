@@ -12,7 +12,8 @@ _MixedNumberType = Union[np.ndarray, int, float]
 
 _Box = Union[
     np.ndarray,
-    Tuple[_MixedNumberType, _MixedNumberType, _MixedNumberType, _MixedNumberType],
+    Tuple[_MixedNumberType, _MixedNumberType,
+          _MixedNumberType, _MixedNumberType],
     "Box"
 ]
 
@@ -20,7 +21,8 @@ _Boxes = Union[
     np.ndarray,
     List["Box"],
     List[np.ndarray],
-    List[Tuple[_MixedNumberType, _MixedNumberType, _MixedNumberType, _MixedNumberType]],
+    List[Tuple[_MixedNumberType, _MixedNumberType,
+               _MixedNumberType, _MixedNumberType]],
     "Boxes"
 ]
 
@@ -134,7 +136,8 @@ class Box:
     def _check_valid_array(self, array: Any) -> np.ndarray:
         cond1 = isinstance(array, tuple) and len(array) == 4
         cond2 = isinstance(array, list) and len(array) == 4
-        cond3 = isinstance(array, np.ndarray) and array.ndim == 1 and len(array) == 4
+        cond3 = isinstance(
+            array, np.ndarray) and array.ndim == 1 and len(array) == 4
         cond4 = isinstance(array, self.__class__)
         if not (cond1 or cond2 or cond3 or cond4):
             raise TypeError(f'Input array must be {_Box}.')
@@ -170,7 +173,7 @@ class Box:
     def square(self) -> "Box":
         """ Convert the box to a square box. """
         arr = self.convert('CXCYWH').numpy()
-        arr[2:] = arr[2:].max()
+        arr[2:] = arr[2:].min()
         return self.__class__(arr, 'CXCYWH').convert(self.box_mode)
 
     def normalize(self, w: int, h: int) -> "Box":
@@ -386,15 +389,18 @@ class Boxes:
 
     def _check_valid_array(self, array: Any) -> np.ndarray:
         cond1 = isinstance(array, list)
-        cond2 = isinstance(array, np.ndarray) and array.ndim == 2 and array.shape[-1] == 4
-        cond3 = isinstance(array, np.ndarray) and array.ndim == 1 and len(array) == 0
+        cond2 = isinstance(
+            array, np.ndarray) and array.ndim == 2 and array.shape[-1] == 4
+        cond3 = isinstance(
+            array, np.ndarray) and array.ndim == 1 and len(array) == 0
         cond4 = isinstance(array, self.__class__)
         if not (cond1 or cond2 or cond3 or cond4):
             raise TypeError(f'Input array must be {_Boxes}.')
         if cond1:
             for i, x in enumerate(array):
                 try:
-                    array[i] = Box(x, box_mode=self.box_mode, normalized=self.normalized).numpy()
+                    array[i] = Box(x, box_mode=self.box_mode,
+                                   normalized=self.normalized).numpy()
                 except TypeError:
                     raise TypeError(f'Input array[{i}] must be {_Box}.')
         if cond4:

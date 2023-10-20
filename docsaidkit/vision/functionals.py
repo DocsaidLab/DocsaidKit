@@ -9,7 +9,7 @@ from ..structures import Box, Boxes
 
 __all__ = [
     'meanblur', 'gaussianblur', 'medianblur', 'imcvtcolor', 'imadjust', 'pad',
-    'imcropbox', 'imcropboxes', 'imbinarize',
+    'imcropbox', 'imcropboxes', 'imbinarize', 'centercrop',
 ]
 
 _Ksize = Union[int, Tuple[int, int], np.ndarray]
@@ -19,7 +19,7 @@ def _check_ksize(ksize: _Ksize) -> Tuple[int, int]:
     if isinstance(ksize, int):
         ksize = (ksize, ksize)
     elif isinstance(ksize, tuple) and len(ksize) == 2 \
-        and all(isinstance(val, int) for val in ksize):
+            and all(isinstance(val, int) for val in ksize):
         ksize = tuple(ksize)
     elif isinstance(ksize, np.ndarray) and ksize.ndim == 0:
         ksize = (int(ksize), int(ksize))
@@ -369,3 +369,18 @@ def imbinarize(
         img = imcvtcolor(img, f'{color_base}2GRAY')
     _, dst = cv2.threshold(img, 0, 255, type=threth + cv2.THRESH_OTSU)
     return dst
+
+
+def centercrop(img: np.ndarray) -> np.ndarray:
+    """
+    Crop the input image to a square region centered at the image center.
+
+    Args:
+        img (np.ndarray):
+            The input image to be cropped.
+
+    Returns:
+        np.ndarray: The cropped image.
+    """
+    box = Box([0, 0, img.shape[1], img.shape[0]]).square()
+    return imcropbox(img, box)

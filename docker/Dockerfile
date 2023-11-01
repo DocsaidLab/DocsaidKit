@@ -57,9 +57,6 @@ RUN cd /usr/local/DocsaidKit && python setup.py bdist_wheel && \
 # Fixed 4.8.0.76 import error
 RUN pip install opencv-python==4.8.0.74
 
-# External tools
-RUN python -m pip install -U rich ptflops==0.7.0
-
 # 建立對應的使用者
 ARG MY_USER_ID
 RUN if getent passwd $MY_USER_ID ; then echo "User already exists" ; else useradd --shell /bin/bash -u $MY_USER_ID -o -c "" -m docsaid ; fi

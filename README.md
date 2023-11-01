@@ -113,6 +113,12 @@ DocsaidKit 的目標是簡化深度學習和計算機視覺的開發過程，並
       pip install "dist/DocsaidKit-${version}-none-any.whl[torch]"
       ```
 
+3. **通過 git clone 並使用 docker 安裝**:
+
+    ```bash
+    bash docker/build.bash
+    ```
+
 #### MacOS-Arm64
 
 由於 MacOS-Arm64 的限制，我們建議使用 conda 進行安裝。

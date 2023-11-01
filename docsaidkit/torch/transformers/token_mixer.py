@@ -2,14 +2,102 @@ from typing import Tuple, Union
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from ..nn.components import LayerNorm2d, build_activation
 from ..nn.mbcnn import MBCNNcell
 
 __all__ = [
     'Attention', 'AttentionMixing', 'RandomMixing', 'SepConvMixing',
-    'PoolMixing',
+    'PoolMixing', 'SelfAttention',
 ]
+
+
+class SelfAttention(nn.Module):
+
+    def __init__(
+        self,
+        embed_dim: int,
+        num_heads: int = 8,
+        dropout: float = 0.,
+        bias: bool = True,
+    ) -> None:
+        """
+        Initialize the multi-head attention mechanism.
+
+        Args:
+            embed_dim (int):
+                Dimensionality of the input and output feature vectors.
+            num_heads (int, optional):
+                Number of attention heads, defaults to 8.
+            dropout (float, optional):
+                Dropout rate, defaults to 0.
+            bias (bool, optional):
+                Whether to include bias in the projection layers, defaults to True.
+        """
+        super().__init__()
+        self.embed_dim = embed_dim
+        self.num_heads = num_heads
+        self.dropout = dropout
+        self.head_dim = embed_dim // num_heads
+        assert self.head_dim * \
+            num_heads == self.embed_dim, "embed_dim must be divisible by num_heads."
+        self.in_proj_query = nn.Linear(embed_dim, embed_dim, bias=bias)
+        self.in_proj_key = nn.Linear(embed_dim, embed_dim, bias=bias)
+        self.in_proj_value = nn.Linear(embed_dim, embed_dim, bias=bias)
+        self.out_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
+        self.dropout_layer = nn.Dropout(dropout)
+
+    def forward(self, query, key, value, attn_mask=None, key_padding_mask=None):
+        """
+        Forward pass for the multi-head attention mechanism.
+
+        Args:
+            query (Tensor):
+                Query tensor of shape (batch_size, seq_len, embed_dim).
+            key (Tensor):
+                Key tensor of shape (batch_size, seq_len, embed_dim).
+            value (Tensor):
+                Value tensor of shape (batch_size, seq_len, embed_dim).
+            attn_mask (Optional[Tensor]):
+                Mask to be added to attention scores before softmax.
+                Default: None.
+            key_padding_mask (Optional[Tensor]):
+                Mask indicating which elements in the key sequence should be ignored.
+                Default: None.
+        """
+        Q = self.in_proj_query(query)
+        K = self.in_proj_key(key)
+        V = self.in_proj_value(value)
+
+        # Split into multiple heads
+        Q = Q.view(Q.size(0), Q.size(1), self.num_heads,
+                   self.head_dim).transpose(1, 2)
+        K = K.view(K.size(0), K.size(1), self.num_heads,
+                   self.head_dim).transpose(1, 2)
+        V = V.view(V.size(0), V.size(1), self.num_heads,
+                   self.head_dim).transpose(1, 2)
+
+        # Scaled dot-product attention
+        attn_output_weights = torch.matmul(
+            Q, K.transpose(-2, -1)) / (self.head_dim ** 0.5)
+
+        # Apply the key padding mask
+        if key_padding_mask is not None:
+            attn_output_weights.masked_fill_(
+                key_padding_mask.unsqueeze(1).unsqueeze(2), float('-inf'))
+
+        if attn_mask is not None:
+            attn_output_weights += attn_mask
+        attn_output_weights = F.softmax(attn_output_weights, dim=-1)
+        attn_output_weights = self.dropout_layer(attn_output_weights)
+
+        # Get final output
+        attn_output = torch.matmul(attn_output_weights, V)
+        attn_output = attn_output.transpose(1, 2).contiguous().view(
+            attn_output.size(0), -1, self.embed_dim)
+
+        return self.out_proj(attn_output), attn_output_weights
 
 
 class Attention(nn.Module):
@@ -190,7 +278,8 @@ class SepConvMixing(nn.Module):
             kernel=kernel_size,
             norm=LayerNorm2d(in_features),
             inner_norm=LayerNorm2d(hid_channels),
-            inner_act=inner_act if isinstance(inner_act, nn.Module) else build_activation(**inner_act),
+            inner_act=inner_act if isinstance(
+                inner_act, nn.Module) else build_activation(**inner_act),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

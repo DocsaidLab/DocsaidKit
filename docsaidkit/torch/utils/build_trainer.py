@@ -102,25 +102,13 @@ def build_dataset(cfg: PowerDict, ds: Dict[str, Any] = {}):
     ds_loader_valid_opts.update({'batch_size': cfg.common.batch_size})
     ds_train_name, ds_train_opts = cfg.dataset.train_options.values()
     ds_valid_name, ds_valid_opts = cfg.dataset.valid_options.values()
-    ds_train_opts.update({
-        'image_size': cfg.common.image_size,
-        'max_answer_length': cfg.common.max_answer_length,
-        'max_boxes_num': cfg.common.max_boxes_num
-    })
-    ds_valid_opts.update({
-        'image_size': cfg.common.image_size,
-        'max_answer_length': cfg.common.max_answer_length,
-        'max_boxes_num': cfg.common.max_boxes_num
-    })
+    if 'global_settings' in cfg:
+        ds_train_opts.update(cfg.global_settings)
+        ds_valid_opts.update(cfg.global_settings)
     ds_train = getattr(ds, ds_train_name)(**ds_train_opts)
     ds_valid = getattr(ds, ds_valid_name)(**ds_valid_opts)
     train_data = DataLoader(dataset=ds_train, **ds_loader_train_opts)
     valid_data = DataLoader(dataset=ds_valid, **ds_loader_valid_opts)
-
-    # log chars table
-    dump_json(ds_train.chars_table,
-              Path(cfg.logger.options.save_dir) / 'CharsTable.json')
-
     return train_data, valid_data
 
 

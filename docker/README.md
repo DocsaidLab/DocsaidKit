@@ -66,7 +66,7 @@ bash docker/build.bash
 
 ```bash
 #!/bin/bash
-docker run -u $(id -u):$(id -g) \
+docker run \
     --gpus all \
     --shm-size=64g \
     --ipc=host --net=host \
@@ -76,7 +76,6 @@ docker run -u $(id -u):$(id -g) \
 
 ### 腳本說明
 
-- `-u $(id -u):$(id -g)`：以當前用戶的 UID 和 GID 運行容器，這確保在容器內部創建的任何文件在原本主機上具有可以操作的權限。
 - `--gpus all`：使用所有可用的 GPU。
 - `--shm-size=64g`：設定共享內存大小為 64 GB，對於某些深度學習工作負載可能是必需的。
 - `--ipc=host --net=host`：容器使用主機的 IPC 命名空間和網絡堆棧。

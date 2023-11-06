@@ -77,25 +77,7 @@ DocsaidKit 的目標是簡化深度學習和計算機視覺的開發過程，並
 
 補充：本套件僅提供內部的 Pypi 服務，若您是外部使用者，請直接使用 git clone 並使用 setup.py 安裝。
 
-1. **通過 PyPi (推薦)**:
-
-    - 基本安裝：
-
-      ```bash
-      pip install --trusted-host 192.168.0.105 \
-        --index-url http://192.168.0.105:8080/simple/ \
-        DocsaidKit==$version
-      ```
-
-    - 針對 **開發環境** 需要安裝的 pytorch 及相關套件：
-
-      ```bash
-      pip install --trusted-host 192.168.0.105 \
-        --index-url http://192.168.0.105:8080/simple/ \
-        "DocsaidKit[torch]==$version"
-      ```
-
-2. **通過 git clone 並使用 setup.py 安裝**:
+1. **通過 git clone 並使用 setup.py 安裝 (推薦)**:
 
     - 基本安裝:
 
@@ -113,11 +95,33 @@ DocsaidKit 的目標是簡化深度學習和計算機視覺的開發過程，並
       pip install "dist/DocsaidKit-${version}-none-any.whl[torch]"
       ```
 
-3. **通過 git clone 並使用 docker 安裝**:
+3. **通過 git clone 並使用 docker 安裝 (穩定環境需求)**:
 
     ```bash
     bash docker/build.bash
     ```
+
+    使用方式請參考：[Docker](./docker/README.md)
+
+3. **通過 PyPi (內部開發者)**:
+
+    - 基本安裝：
+
+      ```bash
+      tgt_ip=192.168.xxx.xxx
+      pip install --trusted-host $tgt_ip \
+        --index-url http://$tgt_ip:8080/simple/ \
+        DocsaidKit==$version
+      ```
+
+    - 針對 **開發環境** 需要安裝的 pytorch 及相關套件：
+
+      ```bash
+      tgt_ip=192.168.xxx.xxx
+      pip install --trusted-host $tgt_ip \
+        --index-url http://$tgt_ip:8080/simple/ \
+        "DocsaidKit[torch]==$version"
+      ```
 
 #### MacOS-Arm64
 
@@ -156,37 +160,14 @@ DocsaidKit 的目標是簡化深度學習和計算機視覺的開發過程，並
     - 在啟動環境後，使用以下命令安裝 DocsaidKit：
 
       ```bash
-      pip install --trusted-host 192.168.0.105 \
-        --index-url http://192.168.0.105:8080/simple/ \
-        DocsaidKit==$version
-      ```
-
-      或通過 git clone:
-
-      ```bash
       pip install wheel setuptools
       python setup.py bdist_wheel
       pip install dist/*.whl
       ```
 
-4. **安裝額外的功能相關依賴**:
+希望這份指南可以協助您順利地完成 DocsaidKit 的安裝！
 
-    - 如果您打算使用機器學習相關的工具，可以安裝 PyTorch 及其他相關庫：
-
-      ```bash
-      pip install torch torchvision
-      ```
-
-    - 目前我們沒有整合 OpenMMLab 相關內容，但若您有個人需求，可以依循下列方式安裝：
-
-      參考 [OpenMMLab 安裝指南](https://mmcv.readthedocs.io/en/latest/get_started/installation.html)
-
-      ```bash
-      pip install openmim
-      mim install mmcv mmdet mmengine
-      ```
-
-希望這份指南可以協助您順利地完成 DocsaidKit 的安裝！如有任何疑問或需要進一步的說明，請查看官方文檔或與我們聯絡。
+如有任何疑問或需要進一步的說明，請查看官方文檔或與我們聯絡。
 
 ## 使用方式
 
@@ -280,6 +261,6 @@ python -m pytest tests
 
 ---
 
-希望以上的說明能讓使用者對 DocsaidKit 有更深的了解。
+希望以上的說明能讓您對 DocsaidKit 有更深的了解。
 
 如果遇到任何問題或需要進一步的支援，歡迎瀏覽我們的 [GitHub 儲存庫](https://github.com/DocsaidLab/DocsaidKit)。

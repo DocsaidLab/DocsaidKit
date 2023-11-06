@@ -1,9 +1,10 @@
-# Training environment
+# Docsaid Training Base Image
 
-我們推薦使用 Docker 來建置模型訓練環境。
+## Overview
+
+此 Docker 映像專為機器學習和深度學習模型訓練環境設計，提供 NVIDIA PyTorch 映像為基礎，並集成了多種音訊、視訊和圖像處理工具。映像中包含了豐富的 Python 套件，適用於各種數據處理和模型訓練任務。
 
 相關參考資料：
-
 
 - 每個版本的細節，請查閱：[PyTorch Release Notes](https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/index.html)
 
@@ -11,58 +12,39 @@
 
 - NVIDIA Toolkit 安裝方式，請參考：[Installing the NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 
-## Build Docker Image
+## 建置 Docker 映像
 
-我們提供了一個 Dockerfile 來建置模型訓練環境，請參考：[Dockerfile](./Dockerfile)
+### 前置要求
 
-使用方式如下：
+- 確保您的系統已安裝 Docker。
+- 確保您的系統支持 NVIDIA Docker，並已安裝 NVIDIA Container Toolkit。
+- 確保您有穩定的網絡連接以便於下載和安裝必要的套件。
+
+### 基礎映像
+
+我們使用 NVIDIA 官方提供的 PyTorch 映像 `nvcr.io/nvidia/pytorch:22.12-py3` 作為基礎，它提供了一個高效、靈活的深度學習環境。
+
+### Dockerfile 說明
+
+- **環境變數設置**：設置了多個環境變數以優化映像的運行。
+- **安裝套件**：包括音訊、視訊和圖像處理相關的庫和工具，以及必要的 Python 套件。
+- **Python 套件**：包括用於訓練的工具和庫，如 `tqdm`, `Pillow`, `tensorboard` 等。
+- **工作目錄**：設置 `/code` 為預設工作目錄。
+
+### 建置指令
+
+在 DocsaidKit 目錄中，執行以下命令來建置 Docker 映像：
 
 ```bash
 cd DocsaidKit
 bash docker/build.bash
 ```
 
-### 文件說明
+## 運行 Docker 映像
 
-1. **基礎映像**：使用 NVIDIA 官方提供的 PyTorch 映像 "nvcr.io/nvidia/pytorch:22.12-py3" 作為基礎。
-
-2. **環境變數設置**：
-    - `DEBIAN_FRONTEND=noninteractive`：確保 apt 命令運行時不會有任何用戶交互。
-    - `PYTHONDONTWRITEBYTECODE=1`：防止 Python 創建 `.pyc` 字節碼文件。
-    - `MPLCONFIGDIR` 和 `TRANSFORMERS_CACHE`：為 Matplotlib 和 Transformers 建立配置和緩存目錄。
-
-3. **安裝套件**：安裝了各種音頻、視頻和圖像處理相關的庫和工具，例如 ffmpeg、exiftool、libjpeg、opencv 等。
-
-4. **Python 套件**：
-    - 升級 setuptools、pip 和 wheel。
-    - 安裝其他 Python 套件，如 tqdm、colored、ipython、tensorboard 等。
-    - 使用指定的版本安裝 opencv-python。
-
-5. **安裝 docsaidkit**：這是一個內部使用的 Python 套件。請注意，安裝此套件時使用了一個特定的 URL 和密碼，這需要您洽詢管理員。
-
-6. **工作目錄**：預設的工作目錄被設定為 `/code`。
-
-### 注意事項
-
-1. 請確保在運行 Docker 映像建構過程時擁有網絡連接，以確保所有套件和工具能夠正確下載和安裝。
-
-2. 使用此 Dockerfile 之前，請確認您有 NVIDIA Docker 支持，因為此 Dockerfile 使用了 NVIDIA 官方的 PyTorch 映像。
-
-3. 在使用 docsaidkit 的安裝命令時，您需要確保能夠訪問提供的 IP 地址（例如 192.168.0.105）且該 IP 提供 PYPI 服務。
-
-4. 若您需要使用其他版本的 Python 套件或工具，請在 Dockerfile 中進行適當修改。
-
-5. 確保有足夠的磁盤空間來下載和建構 Docker 映像。
-
-6. 執行時，需要確認基底映像內容：`FROM nvcr.io/nvidia/pytorch:xx.yy-py3` 所採用的 OpenCV 的版本，由於我們的套件會自動安裝 opencv-python 的最新版本，因此，若基底映像內容的 OpenCV 版本較舊，則會造成版本衝突，因此，必須在最後根據基底版本重新安裝：`RUN pip install opencv-python==a.b.c.xx`。
-
-## Run Docker Image
-
-若您已經成功建構了 Docker 映像，接下來您可以運行該映像：
+建置成功後，您可以使用以下指令來運行映像：
 
 ### 基本運行指令
-
-我們提供了一個 bash 腳本以便於您運行 Docker 映像，內容如下：
 
 ```bash
 #!/bin/bash
@@ -76,7 +58,12 @@ docker run \
 
 ### 腳本說明
 
-- `--gpus all`：使用所有可用的 GPU。
-- `--shm-size=64g`：設定共享內存大小為 64 GB，對於某些深度學習工作負載可能是必需的。
-- `--ipc=host --net=host`：容器使用主機的 IPC 命名空間和網絡堆棧。
-- `--cpuset-cpus="0-31"`：限制容器只使用 CPU 0 到 31。
+- `--gpus all`：分配所有可用 GPU 給 Docker 容器。
+- `--shm-size=64g`：設定共享內存大小，適用於大型深度學習任務。
+- `--ipc=host --net=host`：容器將使用主機的 IPC 和網絡設置。
+- `--cpuset-cpus="0-31"`：限制 CPU 使用，可根據需求調整。
+
+### 注意事項
+
+- 請確保 Docker 映像運行時，主機具有足夠的資源（如內存和儲存空間）。
+- 若有版本衝突或特定需求，可自行調整 Dockerfile 中的安裝套件和版本。

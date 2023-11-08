@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from ..nn import PowerModule
-from ..utils import has_children
+from ..tools import has_children
 
 __all__ = ['GPUNet']
 

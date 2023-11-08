@@ -1,10 +1,14 @@
+import random
 from typing import Any, Dict, List
 
+import cv2
 import lightning as L
 
 from ..optim import build_lr_scheduler, build_optimizer
 
-__all__ = ['BaseMixin']
+__all__ = [
+    'BaseMixin', 'BorderValueMixin', 'FillValueMixin',
+]
 
 
 class BaseMixin(L.LightningModule):
@@ -57,3 +61,49 @@ class BaseMixin(L.LightningModule):
 
     def get_lr(self):
         return self.trainer.optimizers[0].param_groups[0]['lr']
+
+
+class BorderValueMixin:
+
+    @property
+    def pad_mode(self):
+        return random.choice([
+            cv2.BORDER_CONSTANT,
+            cv2.BORDER_REFLECT_101,
+            cv2.BORDER_REPLICATE,
+        ])
+
+    @property
+    def border_mode(self):
+        return random.choice([
+            cv2.BORDER_CONSTANT,
+            cv2.BORDER_REFLECT_101,
+            cv2.BORDER_REPLICATE,
+        ])
+
+    @property
+    def value(self):
+        return [random.randint(0, 255) for _ in range(3)]
+
+    @pad_mode.setter
+    def pad_mode(self, x):
+        return None
+
+    @border_mode.setter
+    def border_mode(self, x):
+        return None
+
+    @value.setter
+    def value(self, x):
+        return None
+
+
+class FillValueMixin:
+
+    @property
+    def fill_value(self):
+        return [random.randint(0, 255) for _ in range(3)]
+
+    @fill_value.setter
+    def fill_value(self, x):
+        return None

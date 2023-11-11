@@ -109,15 +109,16 @@ class ImageEncoder(nn.Module):
             for _ in range(num_layers)
         ])
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, cls_token: torch.Tensor = None) -> torch.Tensor:
         """
         Forward pass of the ImageEncoder.
         """
         x = self.tokenizer(x)
         x = x.flatten(2).transpose(1, 2)
         x = x + self.pos_emb.expand(x.size(0), -1, -1)
-        cls_tokens = self.cls_token.expand(x.size(0), -1, -1)
-        x = torch.cat((cls_tokens, x), dim=1)
+        if cls_token is None:
+            cls_token = self.cls_token.expand(x.size(0), -1, -1)
+        x = torch.cat((cls_token, x), dim=1)
         att_weights = []
         for layer in self.encoder:
             x, _att_weights = layer(x)

@@ -3,14 +3,14 @@ from typing import Any, Generator, Iterable, List, Union
 from ..enums import COLORSTR, FORMATSTR
 
 __all__ = [
-    'make_batch', 'colorstr',
+    'make_batch', 'colorstr', 'gen_download_cmd',
 ]
 
 
 def make_batch(
     data: Union[Iterable, Generator],
     batch_size: int
-)-> Generator[List, None, None]:
+) -> Generator[List, None, None]:
     """
     This function is used to make data to batched data.
 
@@ -60,3 +60,14 @@ def colorstr(
     format_code = FORMATSTR.obj_to_enum(fmt).value
     color_string = f'\033[{format_code};{color_code}m{obj}\033[0m'
     return color_string
+
+
+def gen_download_cmd(file_id: str, target: str):
+    return f"""
+        wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget
+        --quiet
+        --save-cookies /tmp/cookies.txt
+        --keep-session-cookies
+        --no-check-certificate 'https://docs.google.com/uc?export=download&id={file_id}'
+        -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id={file_id}" -O {target} && rm -rf /tmp/cookies.txt
+    """

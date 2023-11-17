@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from ...structures import Box, Boxes, Polygon, Polygons
-from ...utils import get_curdir
+from ...utils import gen_download_cmd, get_curdir
 
 __all__ = [
     'draw_box', 'draw_boxes', 'draw_polygon', 'draw_polygons', 'draw_text',
@@ -244,9 +244,8 @@ def draw_text(
     if font_path is None:
         font_path = DIR / "NotoSansMonoCJKtc-VF.ttf"
         if not font_path.exists():
-            os.system(
-                f"wget https://github.com/googlefonts/noto-cjk/raw/main/Sans/Variable/TTF/Mono/NotoSansMonoCJKtc-VF.ttf -O {font_path}"
-            )
+            file_id = "1Mp-p_FAtoTTTKV7AKTsZIBVf-1jzu97u"
+            os.system(gen_download_cmd(file_id, font_path))
 
     font = ImageFont.truetype(str(font_path), size=text_size)
 

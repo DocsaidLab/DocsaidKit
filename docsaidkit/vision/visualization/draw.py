@@ -22,6 +22,10 @@ _Colors = Union[_Color, List[_Color], np.ndarray]
 _Thickness = Union[int, float, np.ndarray]
 _Thicknesses = Union[List[_Thickness], _Thickness, np.ndarray]
 
+if not (font_path := DIR / "NotoSansMonoCJKtc-VF.ttf").exists():
+    file_id = "1Mp-p_FAtoTTTKV7AKTsZIBVf-1jzu97u"
+    os.system(gen_download_cmd(file_id, str(font_path)))
+
 
 def draw_box(
     img: np.ndarray,
@@ -240,13 +244,7 @@ def draw_text(
         img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
     draw = ImageDraw.Draw(img)
-
-    if font_path is None:
-        font_path = DIR / "NotoSansMonoCJKtc-VF.ttf"
-        if not font_path.exists():
-            file_id = "1Mp-p_FAtoTTTKV7AKTsZIBVf-1jzu97u"
-            os.system(gen_download_cmd(file_id, font_path))
-
+    font_path = DIR / "NotoSansMonoCJKtc-VF.ttf" if font_path is None else font_path
     font = ImageFont.truetype(str(font_path), size=text_size)
 
     _, top, _, bottom = font.getbbox(text)

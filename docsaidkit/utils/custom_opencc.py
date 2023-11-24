@@ -8,10 +8,10 @@ __all__ = [
 
 
 def convert_simplified_to_traditional(text):
-    converter = OpenCC('s2t')  # 从简体中文转换到繁体中文
+    converter = OpenCC('s2t')  # 簡體中文 -> 繁体中文
     return converter.convert(text)
 
 
 def convert_traditional_to_simplified(text):
-    converter = OpenCC('t2s')  # 从繁体中文转换到简体中文
+    converter = OpenCC('t2s')  # 繁体中文 -> 簡體中文
     return converter.convert(text)

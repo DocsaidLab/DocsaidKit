@@ -26,6 +26,12 @@ def get_curdir(
 def rm_path(path: Union[str, Path]):
     pth = Path(path)
     if pth.is_dir():
-        shutil.rmtree(str(path))
+        pth.rmdir()
     else:
         pth.unlink()
+
+
+def copy_path(path_src: Union[str, Path], path_dst: Union[str, Path]):
+    if not Path(path_src).is_file():
+        raise ValueError(f'Input path: "{path_src}" is invaild.')
+    shutil.copy(path_src, path_dst)

@@ -1,220 +1,207 @@
+**[English](README.md)** | **[中文](./docs/README.md)**
+
 # DocsaidKit
 
-## 目錄
+<p align="left">
+    <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-dfd.svg"></a>
+    <a href="https://github.com/DocsaidLab/DocsaidKit/releases"><img src="https://img.shields.io/github/v/release/DocsaidLab/DocsaidKit?color=ffa"></a>
+    <a href=""><img src="https://img.shields.io/badge/python-3.8+-aff.svg"></a>
+</p>
 
-- [介紹](#介紹)
-- [安裝說明](#安裝說明)
-  - [先決條件](#先決條件)
-  - [安裝方式](#安裝方式)
-    - [通用方式](#通用方式)
-    - [MacOS](#macos)
-- [使用方式](#使用方式)
-  - [概述](#概述)
-  - [Structure](#structure)
-  - [Vision](#vision)
-  - [ONNXEngine](#onnxengine)
-  - [Pytorch](#pytorch)
-  - [Others](#others)
-- [Pytest 測試](#pytest-測試)
-- [CI/CD](#cicd)
-  - [持續集成 (CI)](#持續集成-ci)
-  - [持續交付 (CD)](#持續交付-cd)
+## Introduction
 
-## 介紹
+**DocsaidKit** is a Python deep learning toolbox, serving as a core Python package developed in-house.
 
-**DocsaidKit** 是一個 Python 深度學習工具箱，是我們內部開發用的核心 Python 套件。
+Designed and written collaboratively by our internal developers, it supports deep learning and computer vision projects and research. The goal of this toolkit is to provide a unified workflow for developers within our organization, simplifying model development and deployment.
 
-其內容是我們內部的開發者共同設計撰寫，以支持深度學習和計算機視覺相關的項目和研究。我們希望這套工具能為組織內的開發者提供一個統一的工作流程，使模型的開發和部署變得更為直接。
+DocsaidKit is structured into the following main modules:
 
-DocsaidKit 的結構分為以下主要模組：
+- **Vision**: This module includes computer vision-related functions, like image and video processing.
 
-- **vision**：此模組包含計算機視覺相關的功能，例如圖像處理、影片處理等。
+- **Structures**: A module for handling structured data such as Bounding Boxes.
 
-- **structures**：此模組是用於處理 Bounding Box 等結構化資料的模組。
+- **ONNXEngine**: Offers functionality for ONNX inference, supporting ONNX format models.
 
-- **onnxengine**：此模組提供 ONNX 推論相關的功能，支援 ONNX 格式的模型。
+- **Torch**: Related to PyTorch, containing neural network architectures, optimizers, etc.
 
-- **torch**：此模組與 PyTorch 有關，內含神經網絡結構、優化器等相關功能。
+- **Utils**: Provides various utility functions, including file processing and time handling.
 
-- **utils**：此模組提供各種工具函數，包括文件處理、時間處理等常用功能。
+- **Tests**: This directory contains test files to verify the functionality of DocsaidKit.
 
-- **tests**：此目錄包含測試文件，目的是驗證 DocsaidKit 的各個功能。
+Our aim with DocsaidKit is to streamline the development process in deep learning and computer vision, providing a clear structure and modular design for ease of finding and extending functionalities.
 
+## Installation Instructions
 
-DocsaidKit 的目標是簡化深度學習和計算機視覺的開發過程，並提供清晰的結構和模組化的設計，以方便使用者查找和擴展功能。
+Before starting the installation of DocsaidKit, ensure you have met the following prerequisites:
 
-## 安裝說明
+### Prerequisites
 
-在開始安裝 DocsaidKit 之前，請確保您已完成以下先決條件：
+1. **Python Version**:
 
-### 先決條件
+   - Ensure Python 3.8 or above is installed on your system.
 
-1. **Python版本**:
+2. **Dependency Packages**:
 
-    - 確保您的系統已安裝Python 3.8或以上版本。
+   - **Ubuntu**:
 
-2. **依賴套件**:
+     ```bash
+     sudo apt install libturbojpeg exiftool ffmpeg
+     ```
 
-    - **Ubuntu**:
+   - **MacOS**:
 
-      ```bash
-      sudo apt install libturbojpeg exiftool ffmpeg
-      ```
+     ```bash
+     # Install using brew
+     brew install jpeg-turbo exiftool ffmpeg
+     ```
 
-    - **MacOS**:
+3. **Installation of pdf2image**:
 
-      ```bash
-      # 使用 brew 進行安裝
-      brew install jpeg-turbo exiftool ffmpeg
-      ```
+   - Refer to this [page](https://github.com/Belval/pdf2image) for installation guidance.
 
-3. **pdf2image 的安裝**:
+### Installation Methods
 
-    - 建議參考此[頁面](https://github.com/Belval/pdf2image)以完成安裝。
+After meeting the prerequisites, you can choose from the following installation methods:
 
-### 安裝方式
+#### General Method:
 
-完成先決條件後，您可以選擇以下的安裝方式：
+Note: This package is only available through our internal Pypi service. External users should clone via git and install using setup.py.
 
-#### 通用方式：
+1. **Install via git clone and setup.py (Recommended)**:
 
-補充：本套件僅提供內部的 Pypi 服務，若您是外部使用者，請直接使用 git clone 並使用 setup.py 安裝。
+   - Basic installation:
 
-1. **通過 git clone 並使用 setup.py 安裝 (推薦)**:
+     ```bash
+     pip install wheel
+     python setup.py bdist_wheel
+     pip install dist/DocsaidKit-${version}-none-any.whl
+     ```
 
-    - 基本安裝:
+   - Installation for **training environments**:
 
-      ```bash
-      pip install wheel
-      python setup.py bdist_wheel
-      pip install dist/DocsaidKit-${version}-none-any.whl
-      ```
+     ```bash
+     pip install wheel
+     python setup.py bdist_wheel
+     pip install "dist/DocsaidKit-${version}-none-any.whl[torch]"
+     ```
 
-    - 針對 **訓練環境** 的安裝：
+2. **Install via git clone and docker (For stable environment needs)**:
 
-      ```bash
-      pip install wheel
-      python setup.py bdist_wheel
-      pip install "dist/DocsaidKit-${version}-none-any.whl[torch]"
-      ```
+   ```bash
+   bash docker/build.bash
+   ```
 
-3. **通過 git clone 並使用 docker 安裝 (穩定環境需求)**:
+   For usage, refer to: [Docker](./docker/README.md)
 
-    ```bash
-    bash docker/build.bash
-    ```
+3. **Through PyPi (Internal Developers)**:
 
-    使用方式請參考：[Docker](./docker/README.md)
+   - Basic installation:
 
-3. **通過 PyPi (內部開發者)**:
+     ```bash
+     tgt_ip=192.168.xxx.xxx
+     pip install --trusted-host $tgt_ip \
+       --index-url http://$tgt_ip:8080/simple/ \
+       DocsaidKit==$version
+     ```
 
-    - 基本安裝：
+   - For **development environments** requiring PyTorch and related packages:
 
-      ```bash
-      tgt_ip=192.168.xxx.xxx
-      pip install --trusted-host $tgt_ip \
-        --index-url http://$tgt_ip:8080/simple/ \
-        DocsaidKit==$version
-      ```
-
-    - 針對 **開發環境** 需要安裝的 pytorch 及相關套件：
-
-      ```bash
-      tgt_ip=192.168.xxx.xxx
-      pip install --trusted-host $tgt_ip \
-        --index-url http://$tgt_ip:8080/simple/ \
-        "DocsaidKit[torch]==$version"
-      ```
+     ```bash
+     tgt_ip=192.168.xxx.xxx
+     pip install --trusted-host $tgt_ip \
+       --index-url http://$tgt_ip:8080/simple/ \
+       "DocsaidKit[torch]==$version"
+     ```
 
 #### MacOS-Arm64
 
-由於 MacOS-Arm64 的限制，我們建議使用 conda 進行安裝。
+Due to constraints with MacOS-Arm64, we recommend installation via conda.
 
-1. **安裝環境管理器 (例如: conda)**:
+1. **Install Environment Manager (e.g., conda)**:
 
-    - 下載 conda 安裝腳本：
+   - Download the conda installation script:
 
-      ```bash
-      wget https://github.com/conda-forge/miniforge#download
-      ```
+     ```bash
+     wget https://github.com/conda-forge/miniforge#download
+     ```
 
-    - 運行安裝腳本：
+   - Run the installation script:
 
-      ```bash
-      bash Miniforge3-MacOSX-arm64.sh
-      ```
+     ```bash
+     bash Miniforge3-MacOSX-arm64.sh
+     ```
 
-2. **創建並啟動環境**:
+2. **Create and Activate Environment**:
 
-    - 創建一個新的環境：
+   - Create a new environment:
 
-      ```bash
-      conda create -n DocsaidKit python=3.8
-      ```
+     ```bash
+     conda create -n DocsaidKit python=3.8
+     ```
 
-    - 啟動該環境：
+   - Activate the environment:
 
-      ```bash
-      conda activate DocsaidKit
-      ```
+     ```bash
+     conda activate DocsaidKit
+     ```
 
-3. **安裝 DocsaidKit**:
+3. **Install DocsaidKit**:
 
-    - 在啟動環境後，使用以下命令安裝 DocsaidKit：
+   - After activating the environment, install DocsaidKit with:
 
-      ```bash
-      pip install wheel setuptools
-      python setup.py bdist_wheel
-      pip install dist/*.whl
-      ```
+     ```bash
+     pip install wheel setuptools
+     python setup.py bdist_wheel
+     pip install dist/*.whl
+     ```
 
-如有任何疑問或需要進一步的說明，請查看官方文檔或與我們聯絡。
+For any questions or further clarifications, please consult our official documentation or contact us.
 
-## 使用方式
+## Usage
 
-### 概述
+### Overview
 
-DocsaidKit 的使用方式旨在為研究人員和開發者提供一個簡單的接口，用於深度學習和計算機視覺領域的項目和研究。
+The use of DocsaidKit is aimed at providing researchers and developers with a simple interface for projects and research in the fields of deep learning and computer vision.
 
-在這裡，我們會介紹如何使用 DocsaidKit，並提供一些基本的使用示例。
+Here, we introduce how to use DocsaidKit, along with some basic usage examples.
 
 ### Structure
 
-`structures` 模塊是 DocsaidKit 中的一個重要模塊，用於表示和處理一般化的框架（如邊界框）的格式和操作。
+The `structures` module is a crucial component of DocsaidKit, used for representing and handling standardized frameworks like Bounding Boxes.
 
-詳細說明請參考 [Structure](./docs/structure.md)。
+For detailed information, refer to [Structure](./docs/structure.md).
 
 ### Vision
 
-`vision` 模塊包含計算機視覺相關的功能，例如影像處理、視覺幾何、視覺效果等相關功能。。
+The `vision` module encompasses computer vision-related functionalities, such as image processing, visual geometry, and visual effects.
 
-詳細說明請參考 [Vision](./docs/vision.md)。
+For more details, see [Vision](./docs/vision.md).
 
 ### ONNXEngine
 
-`onnxengine` 模塊提供 ONNX 推論相關的功能，支援 ONNX 格式的模型。
+The `onnxengine` module provides functionality for ONNX inference, supporting ONNX format models.
 
-詳細說明請參考 [ONNXEngine](./docs/onnxengine.md)。
+For more information, refer to [ONNXEngine](./docs/onnxengine.md).
 
 ### Pytorch
 
-`torch` 模塊與 PyTorch 有關，內含神經網絡結構、優化器等相關功能。
+The `torch` module is related to PyTorch, containing neural network structures, optimizers, and more.
 
-詳細說明請參考 [Pytorch](./docs/pytorch.md)。
+For a detailed description, see [Pytorch](./docs/pytorch.md).
 
 ### Others
 
-`utils` 模塊提供各種工具函數，包括文件處理、時間處理等常用功能。
+The `utils` module offers various utility functions, including file and time processing.
 
-詳細說明請參考 [Utils](./docs/utils.md)。
+For more details, refer to [Utils](./docs/utils.md).
 
-## Pytest 測試
+## Pytest Testing
 
-為了確保 DocsaidKit 的功能穩定性和正確性，我們採用了 `pytest` 進行單元測試。
+To ensure the stability and correctness of DocsaidKit's functionalities, we use `pytest` for unit testing.
 
-使用者可以自行運行測試，以驗證所使用功能的正確性。
+Users can run tests themselves to verify the accuracy of the functionalities used.
 
-運行測試方法如下：
+The method to run tests is as follows:
 
 ```bash
 python -m pytest tests
@@ -222,54 +209,54 @@ python -m pytest tests
 
 ## CI/CD
 
-**DocsaidKit** 專案嚴格遵循持續整合（CI）與持續交付（CD）的最佳實務，以確保程式碼的品質和專案的穩定性。
+The **DocsaidKit** project strictly adheres to best practices in Continuous Integration (CI) and Continuous Delivery (CD) to ensure code quality and project stability.
 
-我們利用 [GitHub Actions](https://github.com/features/actions) 作為主要的 CI/CD 工具，自動化地執行程式碼檢查、測試和發佈流程。
+We utilize [GitHub Actions](https://github.com/features/actions) as our primary CI/CD tool, automating the code inspection, testing, and release processes.
 
-### 持續整合 (CI)
+### Continuous Integration (CI)
 
-我們的持續整合流程目的是確保所有程式碼提交和合併請求都能達到預設的品質標準。
+Our CI process ensures that all code submissions and merge requests meet preset quality standards.
 
-以下是 CI 流程中的主要步驟：
+Key steps in the CI process include:
 
-1. **程式碼檢出**：
-   - 取得最新的程式碼，確保測試和建構是基於最新的程式碼更改。
+1. **Code Checkout**:
+   - Retrieve the latest code, ensuring testing and building are based on the most recent changes.
 
-2. **環境設置**：
-   - 根據需要的 Python 版本和操作系統設置運行環境。
+2. **Environment Setup**:
+   - Set up the running environment based on required Python versions and operating systems.
 
-3. **依賴安裝**：
-   - 安裝必要的系統依賴和 Python 依賴套件，為後續的測試和建構步驟做好準備。
+3. **Dependency Installation**:
+   - Install necessary system dependencies and Python packages in preparation for subsequent testing and building steps.
 
-4. **程式碼品質檢查**：
-   - 使用 `pylint` 對程式碼進行靜態分析，檢查程式碼的品質和風格。
+4. **Code Quality Checks**:
+   - Conduct static analysis of the code using `pylint` for quality and style checks.
 
-5. **單元測試和整合測試**：
-   - 通過 `pytest` 執行單元測試和整合測試，確保程式碼的功能正確性和穩定性。
-   - 生成測試覆蓋率報告，並通過 GitHub Actions 將覆蓋率資訊回傳給開發團隊。
+5. **Unit and Integration Testing**:
+   - Run unit and integration tests using `pytest` to ensure code functionality and stability.
+   - Generate test coverage reports and feedback coverage information to the development team via GitHub Actions.
 
-### 持續交付 (CD)
+### Continuous Delivery (CD)
 
-我們的持續交付流程旨在自動化建構和發佈過程，確保高效、準確地將新版本交付給使用者。
+Our CD process aims to automate the build and release process, ensuring efficient and accurate delivery of new versions to users.
 
-以下是 CD 流程中的主要步驟：
+Key steps in the CD process include:
 
-1. **版本號更新**：
-   - 根據輸入的版本標籤自動更新程式碼中的版本號。
+1. **Version Number Update**:
+   - Automatically update the code's version number based on the input version tag.
 
-2. **建構和打包**：
-   - 自動化建構 Python wheel 包，方便分發和安裝。
-   - 使用 `twine` 工具將建構好的 wheel 包上傳到私有倉庫。
+2. **Build and Packaging**:
+   - Automatically build Python wheel packages for easy distribution and installation.
+   - Use `twine` to upload the built wheel packages to a private repository.
 
-3. **建立發佈**：
-   - 在 GitHub 上建立一個新的 release，填寫版本資訊和發佈說明。
-   - 上傳建構好的 wheel 包作為 release 的附件，方便使用者下載。
+3. **Create Release**:
+   - Create a new release on GitHub, filling in version information and release notes.
+   - Upload the built wheel package as an attachment to the release for user download.
 
-4. **清理建構環境**：
-   - 清理建構產生的臨時檔案和目錄，保持建構環境的整潔。
+4. **Clean Build Environment**:
+   - Clean up temporary files and directories generated during the build, maintaining a tidy build environment.
 
 ---
 
-希望以上的說明能讓您對 DocsaidKit 有更深的了解。
+We hope this explanation provides a deeper understanding of DocsaidKit.
 
-如果遇到任何問題或需要進一步的支援，歡迎瀏覽我們的 [GitHub](https://github.com/DocsaidLab/DocsaidKit)。
+For any issues or further support, feel free to visit our [GitHub](https://github.com/DocsaidLab/DocsaidKit).

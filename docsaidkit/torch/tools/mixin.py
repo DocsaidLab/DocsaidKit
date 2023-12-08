@@ -69,7 +69,6 @@ class BorderValueMixin:
     def pad_mode(self):
         return random.choice([
             cv2.BORDER_CONSTANT,
-            cv2.BORDER_REFLECT_101,
             cv2.BORDER_REPLICATE,
         ])
 
@@ -77,7 +76,6 @@ class BorderValueMixin:
     def border_mode(self):
         return random.choice([
             cv2.BORDER_CONSTANT,
-            cv2.BORDER_REFLECT_101,
             cv2.BORDER_REPLICATE,
         ])
 

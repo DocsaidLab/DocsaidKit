@@ -143,47 +143,36 @@ def merge_boxes(boxes: Boxes, threshold: float = 0) -> Tuple["Boxes", list]:
 
 
 def jaccard_index(
-    pred_poly: Polygon,
-    gt_poly: Polygon,
+    pred_poly: np.ndarray,
+    gt_poly: np.ndarray,
     image_size: Tuple[int, int],
-    normalized: bool = False
 ) -> float:
     """
     Reference : https://github.com/jchazalon/smartdoc15-ch1-eval
 
     Compute the Jaccard index of two polygons.
     Args:
-        pred_poly (Polygon):
+        pred_poly (np.ndarray):
             Predicted polygon, a 4-point polygon.
-        gt_poly (Polygon):
+        gt_poly (np.ndarray):
             Ground truth polygon, a 4-point polygon.
         image_size (tuple):
             Image size, (height, width).
-        normalized (bool):
-            Whether the input polygon is normalized.
 
     Returns:
         float: Jaccard index.
     """
 
-    if not isinstance(pred_poly, Polygon) or not isinstance(gt_poly, Polygon):
-        raise TypeError(f'Input type of poly1 and poly2 must be Polygon.')
-
-    if pred_poly.numpy().shape != (4, 2) or gt_poly.numpy().shape != (4, 2):
+    if pred_poly.shape != (4, 2) or gt_poly.shape != (4, 2):
         raise ValueError(f'Input polygon must be 4-point polygon.')
 
     if image_size is None:
         raise ValueError(f'Input image size must be provided.')
 
+    pred_poly = pred_poly.astype(np.float32)
+    gt_poly = gt_poly.astype(np.float32)
+
     height, width = image_size
-
-    if normalized:
-        pred_poly = pred_poly.denormalize(width, height)
-        gt_poly = gt_poly.denormalize(width, height)
-
-    pred_poly = pred_poly.numpy().astype(np.float32)
-    gt_poly = gt_poly.numpy().astype(np.float32)
-
     object_coord_target = np.array([
         [0, 0],
         [width, 0],

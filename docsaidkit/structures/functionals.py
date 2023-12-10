@@ -178,8 +178,8 @@ def jaccard_index(
     height, width = image_size
 
     if normalized:
-        pred_poly = pred_poly.denormalize(height, width)
-        gt_poly = gt_poly.denormalize(height, width)
+        pred_poly = pred_poly.denormalize(width, height)
+        gt_poly = gt_poly.denormalize(width, height)
 
     pred_poly = pred_poly.numpy().astype(np.float32)
     gt_poly = gt_poly.numpy().astype(np.float32)

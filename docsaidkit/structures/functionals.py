@@ -1,12 +1,16 @@
 from typing import Tuple
 
+import cv2
 import networkx as nx
 import numpy as np
+from shapely.geometry import Polygon as ShapelyPolygon
 
 from .boxes import Boxes
+from .polygons import Polygon
 
 __all__ = [
     'pairwise_intersection', 'pairwise_iou', 'pairwise_ioa', 'merge_boxes',
+    'jaccard_index', 'polygon_iou'
 ]
 
 
@@ -136,3 +140,102 @@ def merge_boxes(boxes: Boxes, threshold: float = 0) -> Tuple["Boxes", list]:
     mboxes = Boxes(mboxes, box_mode='XYXY').convert(boxes.box_mode)
 
     return mboxes, mlabel
+
+
+def jaccard_index(
+    pred_poly: Polygon,
+    gt_poly: Polygon,
+    image_size: Tuple[int, int],
+    normalized: bool = False
+) -> float:
+    """
+    Reference : https://github.com/jchazalon/smartdoc15-ch1-eval
+
+    Compute the Jaccard index of two polygons.
+    Args:
+        pred_poly (Polygon):
+            Predicted polygon, a 4-point polygon.
+        gt_poly (Polygon):
+            Ground truth polygon, a 4-point polygon.
+        image_size (tuple):
+            Image size, (height, width).
+        normalized (bool):
+            Whether the input polygon is normalized.
+
+    Returns:
+        float: Jaccard index.
+    """
+
+    if not isinstance(pred_poly, Polygon) or not isinstance(gt_poly, Polygon):
+        raise TypeError(f'Input type of poly1 and poly2 must be Polygon.')
+
+    if pred_poly.numpy().shape != (4, 2) or gt_poly.numpy().shape != (4, 2):
+        raise ValueError(f'Input polygon must be 4-point polygon.')
+
+    if image_size is None:
+        raise ValueError(f'Input image size must be provided.')
+
+    height, width = image_size
+
+    if normalized:
+        pred_poly = pred_poly.denormalize(height, width)
+        gt_poly = gt_poly.denormalize(height, width)
+
+    pred_poly = pred_poly.numpy().astype(np.float32)
+    gt_poly = gt_poly.numpy().astype(np.float32)
+
+    object_coord_target = np.array([
+        [0, 0],
+        [width, 0],
+        [width, height],
+        [0, height]]
+    ).astype(np.float32)
+
+    M = cv2.getPerspectiveTransform(
+        gt_poly.reshape(-1, 1, 2),
+        object_coord_target.reshape(-1, 1, 2)
+    )
+
+    transformed_pred_coords = cv2.perspectiveTransform(
+        pred_poly.reshape(-1, 1, 2), M)
+
+    try:
+        poly_target = ShapelyPolygon(object_coord_target)
+        poly_pred = ShapelyPolygon(transformed_pred_coords.reshape(-1, 2))
+        intersection = poly_target.intersection(poly_pred).area
+        union = poly_target.union(poly_pred).area
+        iou = intersection / union
+        jaccard_index = iou if union != 0 else 0
+    except:
+        jaccard_index = 0
+
+    return jaccard_index
+
+
+def polygon_iou(poly1: Polygon, poly2: Polygon):
+    """
+    Compute the IoU of two polygons.
+    Args:
+        poly1 (Polygon):
+            Predicted polygon, a 4-point polygon.
+        poly2 (Polygon):
+            Ground truth polygon, a 4-point polygon.
+
+    Returns:
+        float: IoU.
+    """
+    if not isinstance(poly1, Polygon) or not isinstance(poly2, Polygon):
+        raise TypeError(f'Input type of poly1 and poly2 must be Polygon.')
+
+    if poly1.numpy().shape != (4, 2) or poly2.numpy().shape != (4, 2):
+        raise ValueError(f'Input polygon must be 4-point polygon.')
+
+    poly1 = poly1.numpy().astype(np.float32)
+    poly2 = poly2.numpy().astype(np.float32)
+    poly1 = ShapelyPolygon(poly1)
+    poly2 = ShapelyPolygon(poly2)
+    intersection = poly1.intersection(poly2).area
+    union = poly1.union(poly2).area
+    iou = intersection / union
+
+    return iou

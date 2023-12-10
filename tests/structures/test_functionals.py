@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-
-from docsaidkit import Boxes, merge_boxes, pairwise_ioa, pairwise_iou
+from docsaidkit import (Boxes, Polygon, jaccard_index, merge_boxes,
+                        pairwise_ioa, pairwise_iou, polygon_iou)
 
 test_functionals_error_param = [
     (
@@ -39,7 +39,8 @@ def test_functionals_error(fn, test_input, error, match):
 
 test_pairwise_iou_param = [(
     Boxes(np.array([[10, 10, 20, 20], [15, 15, 25, 25]]), "XYXY"),
-    Boxes(np.array([[10, 10, 20, 20], [15, 15, 25, 25], [25, 25, 10, 10]]), "XYWH"),
+    Boxes(
+        np.array([[10, 10, 20, 20], [15, 15, 25, 25], [25, 25, 10, 10]]), "XYWH"),
     np.array([
         [1 / 4, 1 / 28, 0],
         [1 / 4, 4 / 25, 0]
@@ -102,3 +103,78 @@ def test_merge_boxes(threshold, expected1, expected2):
                 assert m_ == e_
         else:
             assert m == e
+
+
+test_polygon_iou_param = [
+    (
+        Polygon(np.array([[0, 0], [0, 10], [10, 10], [10, 0]])),
+        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5]])),
+        25 / 175
+    )
+]
+
+
+@pytest.mark.parametrize('poly1, poly2, expected', test_polygon_iou_param)
+def test_polygon_iou(poly1, poly2, expected):
+    assert polygon_iou(poly1, poly2) == expected
+
+
+test_polygon_iou_error_param = [
+    (
+        Polygon(np.array([[0, 0], [0, 10], [10, 10]])),
+        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5]])),
+        ValueError,
+        'Input polygon must be 4-point polygon.'
+    ),
+    (
+        Polygon(np.array([[0, 0], [0, 10], [10, 10], [10, 0]])),
+        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5], [5, 5]])),
+        ValueError,
+        'Input polygon must be 4-point polygon.'
+    ),
+]
+
+
+@pytest.mark.parametrize('poly1, poly2, error, match', test_polygon_iou_error_param)
+def test_polygon_iou_error(poly1, poly2, error, match):
+    with pytest.raises(error, match=match):
+        polygon_iou(poly1, poly2)
+
+
+test_jaccard_index_param = [
+    (
+        Polygon(np.array([[0, 0], [0, 10], [10, 10], [10, 0]])),
+        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5]])),
+        (100, 100),
+        25 / 175
+    )
+]
+
+
+@pytest.mark.parametrize('pred_poly, gt_poly, img_size, expected', test_jaccard_index_param)
+def test_jaccard_index(pred_poly, gt_poly, img_size, expected):
+    assert jaccard_index(pred_poly, gt_poly, img_size) == expected
+
+
+test_jaccard_index_error_param = [
+    (
+        Polygon(np.array([[0, 0], [0, 10], [10, 10]])),
+        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5]])),
+        (100, 100),
+        ValueError,
+        'Input polygon must be 4-point polygon.'
+    ),
+    (
+        Polygon(np.array([[0, 0], [0, 10], [10, 10], [10, 0]])),
+        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5], [5, 5]])),
+        (100, 100),
+        ValueError,
+        'Input polygon must be 4-point polygon.'
+    ),
+]
+
+
+@pytest.mark.parametrize('pred_poly, gt_poly, img_size, error, match', test_jaccard_index_error_param)
+def test_jaccard_index_error(pred_poly, gt_poly, img_size, error, match):
+    with pytest.raises(error, match=match):
+        jaccard_index(pred_poly, gt_poly, img_size)

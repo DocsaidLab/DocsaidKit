@@ -4,4 +4,4 @@ from .structures import *
 from .utils import *
 from .vision import *
 
-__version__ = '0.10.2'
+__version__ = '0.10.3'

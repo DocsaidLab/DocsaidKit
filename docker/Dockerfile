@@ -58,6 +58,9 @@ RUN cd /usr/local/DocsaidKit && python setup.py bdist_wheel && \
 # Fixed 4.8.0.76 import error
 RUN pip install opencv-python==4.8.0.74
 
+# Fixed "ModuleNotFoundError: No module named 'onnx.reference'" error
+RUN pip install onnx -U
+
 # Preload data
 RUN python -c "import docsaidkit"
 

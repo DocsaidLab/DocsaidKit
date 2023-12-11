@@ -5,6 +5,7 @@ from torch.optim.lr_scheduler import (CosineAnnealingLR,
                                       ExponentialLR, LambdaLR, MultiStepLR,
                                       OneCycleLR, ReduceLROnPlateau, StepLR)
 
+from .polynomial_lr_warmup import PolynomialLRWarmup
 from .warm_up import *
 
 

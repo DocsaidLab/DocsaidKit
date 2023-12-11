@@ -196,6 +196,9 @@ def jaccard_index(
         iou = intersection / union
         jaccard_index = iou if union != 0 else 0
     except:
+        # 通常錯誤來自於：
+        # TopologyException: Input geom 1 is invalid: Ring Self-intersection
+        # 表示多邊形自己交叉了，這時候就直接給 0
         jaccard_index = 0
 
     return jaccard_index
@@ -221,10 +224,17 @@ def polygon_iou(poly1: Polygon, poly2: Polygon):
 
     poly1 = poly1.numpy().astype(np.float32)
     poly2 = poly2.numpy().astype(np.float32)
-    poly1 = ShapelyPolygon(poly1)
-    poly2 = ShapelyPolygon(poly2)
-    intersection = poly1.intersection(poly2).area
-    union = poly1.union(poly2).area
-    iou = intersection / union
+
+    try:
+        poly1 = ShapelyPolygon(poly1)
+        poly2 = ShapelyPolygon(poly2)
+        intersection = poly1.intersection(poly2).area
+        union = poly1.union(poly2).area
+        iou = intersection / union
+    except:
+        # 通常錯誤來自於：
+        # TopologyException: Input geom 1 is invalid: Ring Self-intersection
+        # 表示多邊形自己交叉了，這時候就直接給 0
+        iou = 0
 
     return iou

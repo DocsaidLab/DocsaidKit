@@ -31,7 +31,7 @@ def load_model_from_config(
     network: Dict[str, Any] = {},
 ) -> Tuple[nn.Module, PowerDict]:
 
-    T = now(fmt='%Y-%m-%d %H:%M:%S')
+    T = now(fmt='%Y-%m-%d-%H-%M-%S')
 
     if root is None:
         DIR = get_curdir(__file__)

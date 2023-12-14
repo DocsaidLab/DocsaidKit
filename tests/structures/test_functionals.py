@@ -143,8 +143,8 @@ def test_polygon_iou_error(poly1, poly2, error, match):
 
 test_jaccard_index_param = [
     (
-        Polygon(np.array([[0, 0], [0, 10], [10, 10], [10, 0]])),
-        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5]])),
+        np.array([[0, 0], [0, 10], [10, 10], [10, 0]]),
+        np.array([[5, 5], [5, 15], [15, 15], [15, 5]]),
         (100, 100),
         25 / 175
     )
@@ -158,15 +158,15 @@ def test_jaccard_index(pred_poly, gt_poly, img_size, expected):
 
 test_jaccard_index_error_param = [
     (
-        Polygon(np.array([[0, 0], [0, 10], [10, 10]])),
-        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5]])),
+        np.array([[0, 0], [0, 10], [10, 10]]),
+        np.array([[5, 5], [5, 15], [15, 15], [15, 5]]),
         (100, 100),
         ValueError,
         'Input polygon must be 4-point polygon.'
     ),
     (
-        Polygon(np.array([[0, 0], [0, 10], [10, 10], [10, 0]])),
-        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5], [5, 5]])),
+        np.array([[0, 0], [0, 10], [10, 10], [10, 0]]),
+        np.array([[5, 5], [5, 15], [15, 15], [15, 5], [5, 5]]),
         (100, 100),
         ValueError,
         'Input polygon must be 4-point polygon.'

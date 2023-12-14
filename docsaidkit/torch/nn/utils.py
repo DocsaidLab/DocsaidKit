@@ -7,6 +7,7 @@ from .components import build_activation
 
 __all__ = [
     'PowerModule', 'initialize_weights', 'WeightedSum', 'Identity',
+    'Transpose', 'Permute',
 ]
 
 
@@ -31,7 +32,8 @@ def initialize_weights(
         TypeError: If init_type is not supported.
     """
     if not isinstance(model, nn.Module):
-        raise TypeError(f'model must be an instance of nn.Module, but got {type(model)}')
+        raise TypeError(
+            f'model must be an instance of nn.Module, but got {type(model)}')
 
     init_functions = {
         'uniform': nn.init.kaiming_uniform_,
@@ -92,7 +94,8 @@ class PowerModule(nn.Module):
         elif part_names is None:
             return
         else:
-            part_names = [part_names] if isinstance(part_names, str) else part_names
+            part_names = [part_names] if isinstance(part_names, str) \
+                else part_names
             for layer_name in part_names:
                 module = self
                 for attr in layer_name.split('.'):
@@ -119,7 +122,8 @@ class PowerModule(nn.Module):
         elif part_names is None:
             return
         else:
-            part_names = [part_names] if isinstance(part_names, str) else part_names
+            part_names = [part_names] if isinstance(part_names, str) \
+                else part_names
             for layer_name in part_names:
                 module = self
                 for attr in layer_name.split('.'):
@@ -160,15 +164,18 @@ class WeightedSum(nn.Module):
         if act is None:
             self.relu = nn.Identity()
         else:
-            self.relu = act if isinstance(act, nn.Module) else build_activation(**act)
+            self.relu = act if isinstance(act, nn.Module) \
+                else build_activation(**act)
         self.epsilon = 1e-4
 
     def forward(self, *x: List[torch.Tensor]) -> torch.Tensor:
         if len(x) != self.input_size:
             raise ValueError('Invalid input size not equal to weight size.')
         weights = self.weights_relu(self.weights)
-        weights = weights / (torch.sum(weights, dim=0, keepdim=True) + self.epsilon)
-        weighted_x = torch.einsum('i,i...->...', weights, torch.stack(x, dim=0))
+        weights = weights / (
+            torch.sum(weights, dim=0, keepdim=True) + self.epsilon)
+        weighted_x = torch.einsum(
+            'i,i...->...', weights, torch.stack(x, dim=0))
         weighted_x = self.relu(weighted_x)
         return weighted_x
 
@@ -193,8 +200,30 @@ class Identity(PowerModule):
         torch.Size([128, 20])
 
     """
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__()
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         return input
+
+
+class Transpose(nn.Module):
+
+    def __init__(self, dim1: int, dim2: int) -> None:
+        super().__init__()
+        self.dim1 = dim1
+        self.dim2 = dim2
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x.transpose(self.dim1, self.dim2)
+
+
+class Permute(nn.Module):
+
+    def __init__(self, dims: List[int]) -> None:
+        super().__init__()
+        self.dims = dims
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x.permute(*self.dims)

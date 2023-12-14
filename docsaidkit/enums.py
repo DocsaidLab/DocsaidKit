@@ -1,7 +1,15 @@
+import json
+from collections import OrderedDict
+from dataclasses import asdict, dataclass, field
 from enum import Enum, IntEnum
-from typing import Any
+from typing import Any, Callable, Dict, Mapping, Optional
+from warnings import warn
 
 import cv2
+import numpy as np
+from dacite import from_dict
+
+from .structures import Box, Boxes, Polygon, Polygons
 
 __all__ = [
     'EnumCheckMixin', 'INTER', 'ROTATE', 'BORDER', 'MORPH', 'COLORSTR',
@@ -27,6 +35,64 @@ class EnumCheckMixin:
                 pass
 
         raise ValueError(f"{obj} is not correct for {cls.__name__}")
+
+
+def dict_to_jsonable(
+    d: Mapping,
+    jsonable_func: Optional[Dict[str, Callable]] = None,
+    dict_factory: Mapping = OrderedDict,
+) -> Any:
+    out = dict_factory()
+    for k, v in d.items():
+        if jsonable_func is not None and k in jsonable_func:
+            out[k] = jsonable_func[k](v)
+        else:
+            if isinstance(v, (Box, Boxes)):
+                out[k] = v.convert('XYXY').numpy().astype(
+                    float).round().tolist()
+            elif isinstance(v, (Polygon, Polygons)):
+                out[k] = v.numpy().astype(float).round().tolist()
+            elif isinstance(v, (np.ndarray, np.generic)):
+                out[k] = v.tolist()
+            elif isinstance(v, (list, tuple)):
+                out[k] = [
+                    dict_to_jsonable(x, jsonable_func) if isinstance(
+                        x, dict) else x
+                    for x in v
+                ]
+            elif isinstance(v, Enum):
+                out[k] = v.name
+            elif isinstance(v, Mapping):
+                out[k] = dict_to_jsonable(v, jsonable_func)
+            else:
+                out[k] = v
+
+    try:
+        json.dumps(out)
+    except Exception as e:
+        warn(e)
+    return out
+
+
+class DataclassCopyMixin:
+
+    def __copy__(self):
+        out = asdict(self, dict_factory=OrderedDict)
+        return from_dict(data_class=self.__class__, data=out)
+
+    def __deepcopy__(self, memo):
+        out = asdict(self, dict_factory=OrderedDict)
+        return from_dict(data_class=self.__class__, data=out)
+
+
+class DataclassToJsonMixin:
+
+    def be_jsonable(self, dict_factory=OrderedDict):
+        d = asdict(self, dict_factory=OrderedDict)
+        return dict_to_jsonable(d, getattr(self, 'jsonable_func', None), dict_factory)
+
+    def regist_jsonable_func(self, jsonable_func: Optional[Dict[str, Callable]] = None):
+        self.jsonable_func = jsonable_func
 
 
 class INTER(EnumCheckMixin, IntEnum):

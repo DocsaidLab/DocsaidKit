@@ -12,6 +12,16 @@
 
 - NVIDIA Toolkit 安裝方式，請參考：[Installing the NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 
+---
+
+選擇 pytorch 映像時，必須同時參考 onnxruntime 的版本，以確保兩者相容。
+
+相關內容可參考：[ONNX Runtime Release Notes](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html#requirements)
+
+舉例來說：
+
+當我們選擇使用 pytorch:23.11 版本時，其對應的 cuda 版本為 12.3.0。因此我們將無法在此映像中使用 onnxruntime-gpu 版本，因為即使是目前最新的 v1.16 版，它需要的 cuda 版本為 11.8。若希望能使用 onnxruntime-gpu，則必須選擇 pytorch:22.12 版本，其對應的 cuda 版本為 11.8.0。
+
 ## 建置 Docker 映像
 
 ### 前置要求

@@ -11,8 +11,8 @@ from dacite import from_dict
 from .structures import Box, Boxes, Polygon, Polygons
 
 __all__ = [
-    'dict_to_jsonable', 'EnumCheckMixin', 'DataclassCopyMixin',
-    'DataclassToJsonMixin'
+    'EnumCheckMixin', 'DataclassCopyMixin', 'DataclassToJsonMixin',
+    'dict_to_jsonable',
 ]
 
 
@@ -50,6 +50,7 @@ def dict_to_jsonable(
         json.dumps(out)
     except Exception as e:
         warn(e)
+
     return out
 
 
@@ -76,8 +77,10 @@ class EnumCheckMixin:
 class DataclassCopyMixin:
 
     def __copy__(self):
-        out = asdict(self, dict_factory=OrderedDict)
-        return from_dict(data_class=self.__class__, data=out)
+        return self.__class__(**{
+            field: getattr(self, field)
+            for field in self.__dataclass_fields__
+        })
 
     def __deepcopy__(self, memo):
         out = asdict(self, dict_factory=OrderedDict)
@@ -86,9 +89,14 @@ class DataclassCopyMixin:
 
 class DataclassToJsonMixin:
 
+    def __init__(self):
+        self.jsonable_func = None
+
     def be_jsonable(self, dict_factory=OrderedDict):
-        d = asdict(self, dict_factory=OrderedDict)
-        return dict_to_jsonable(d, getattr(self, 'jsonable_func', None), dict_factory)
+        d = asdict(self, dict_factory=dict_factory)
+        if self.jsonable_func:
+            return self.jsonable_func(d)
+        return dict_to_jsonable(d)
 
     def regist_jsonable_func(self, jsonable_func: Optional[Dict[str, Callable]] = None):
         self.jsonable_func = jsonable_func

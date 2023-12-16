@@ -1,5 +1,3 @@
-**[English](README.md)** | **[中文](./docs/README.md)**
-
 # DocsaidKit
 
 <p align="left">

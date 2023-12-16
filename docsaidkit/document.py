@@ -61,22 +61,11 @@ def poly_angle(
 class Document(DataclassCopyMixin, DataclassToJsonMixin):
 
     image: Optional[np.ndarray] = field(default=None)
+    doc_polygon: Optional[Polygon] = field(default=None)
     doc_type: Optional[str] = field(default=None)
     ocr_texts: Optional[List[str]] = field(default=None)
     ocr_polygons: Optional[Polygons] = field(default=None)
     ocr_kie: Optional[dict] = field(default=None)
-    _doc_polygon: Optional[Polygon] = field(default=None, repr=False)
-
-    @property
-    def doc_polygon(self):
-        return self._doc_polygon
-
-    @doc_polygon.setter
-    def doc_polygon(self, polygon: Optional[Polygon]):
-        if polygon is not None:
-            if not isinstance(polygon, Polygon) or len(polygon) != 4:
-                raise ValueError("doc_polygon must be a Polygon with 4 points")
-        self._doc_polygon = polygon
 
     @property
     def has_doc_polygon(self):

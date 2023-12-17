@@ -94,9 +94,7 @@ class DataclassToJsonMixin:
 
     def be_jsonable(self, dict_factory=OrderedDict):
         d = asdict(self, dict_factory=dict_factory)
-        if self.jsonable_func:
-            return self.jsonable_func(d)
-        return dict_to_jsonable(d)
+        return dict_to_jsonable(d, getattr(self, 'jsonable_func', None), dict_factory)
 
     def regist_jsonable_func(self, jsonable_func: Optional[Dict[str, Callable]] = None):
         self.jsonable_func = jsonable_func

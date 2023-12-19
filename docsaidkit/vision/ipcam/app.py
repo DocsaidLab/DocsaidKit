@@ -7,6 +7,19 @@ from .camera import IpcamCapture
 __all__ = ['WebDemo']
 
 
+def gen(cap, pipelines=[]):
+    while True:
+        frame = cap.get_frame()
+        for f in pipelines:
+            frame = f(frame)
+        frame_bytes = jpgencode(frame)
+
+        yield (
+            b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n'
+        )
+
+
 class WebDemo:
 
     def __init__(
@@ -14,9 +27,9 @@ class WebDemo:
         camera_ip: str,
         color_base: str = 'BGR',
         route: str = '/',
+        pipelines: list = [],
     ):
         app = Flask(__name__)
-        self.cap = IpcamCapture(f'http://{camera_ip}:8080/video', color_base)
 
         @ app.route(route)
         def _index():
@@ -26,21 +39,20 @@ class WebDemo:
 
         @ app.route('/video_feed')
         def _video_feed():
-            return Response(
-                self.gen(),
-                mimetype='multipart/x-mixed-replace; boundary=frame'
-            )
+            if isinstance(camera_ip, int):
+                return Response(
+                    gen(cap=IpcamCapture(camera_ip, color_base),
+                        pipelines=pipelines),
+                    mimetype='multipart/x-mixed-replace; boundary=frame'
+                )
+            else:
+                return Response(
+                    gen(cap=IpcamCapture(
+                        f'http://{camera_ip}:8080/video', color_base), pipelines=pipelines),
+                    mimetype='multipart/x-mixed-replace; boundary=frame'
+                )
 
         self.app = app
-
-    def gen(self):
-        while True:
-            frame = self.cap.get_frame()
-            frame_bytes = jpgencode(frame)
-            yield (
-                b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n'
-            )
 
     def run(self, host='0.0.0.0', port=5001, debug=False, threaded=True):
         self.app.run(host=host, port=port, debug=debug, threaded=threaded)

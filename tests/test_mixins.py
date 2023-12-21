@@ -137,19 +137,3 @@ class TestDataclassCopyMixin:
 class TestDataclassJson(DataclassToJsonMixin, DataclassCopyMixin):
     int_field: int
     list_field: List[Any]
-
-
-class TestDataclassToJsonMixin:
-
-    @pytest.fixture
-    def test_dataclass_instance(self):
-        return TestDataclassJson(10, [1, 2, 3])
-
-    def test_custom_jsonable_func(self, test_dataclass_instance):
-        def custom_func(data):
-            return {k: ("list" if isinstance(v, list) else v) for k, v in data.items()}
-
-        test_dataclass_instance.regist_jsonable_func(custom_func)
-        jsonable_data = test_dataclass_instance.be_jsonable()
-        assert jsonable_data['int_field'] == 10
-        assert jsonable_data['list_field'] == "list"

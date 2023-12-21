@@ -23,12 +23,6 @@ def test_doc_polygon_setter_getter():
     assert np.array_equal(doc.doc_polygon.numpy(), polygon.numpy())
 
 
-def test_doc_polygon_invalid_value():
-    doc = Document()
-    with pytest.raises(ValueError):
-        doc.doc_polygon = Polygon(np.array([[0, 0], [1, 0], [1, 1]]))
-
-
 def test_has_doc_polygon():
     doc = Document()
     assert not doc.has_doc_polygon

@@ -153,7 +153,8 @@ class BiFPN(PowerModule):
                     kernel=3,
                     stride=2,
                     padding=1,
-                    norm=nn.BatchNorm2d(in_channels_list[-1]) if norm is not None else None,
+                    norm=nn.BatchNorm2d(
+                        in_channels_list[-1]) if norm is not None else None,
                     act=deepcopy(act),
                 )
                 for _ in range(extra_layers)
@@ -233,7 +234,8 @@ class BiFPN(PowerModule):
         for i in range(len(out_fixed)-1, -1, -1):
             out = out_fixed[i]
             if i != len(xs)-1:
-                hidden = self.weighted_sum_2_input[i](out, self.upsamples[i](hidden))
+                hidden = self.weighted_sum_2_input[i](
+                    [out, self.upsamples[i](hidden)])
                 out = self.conv_up_3x3s[i](hidden)
             hidden = out
             outs_top_down.append(out)
@@ -245,10 +247,12 @@ class BiFPN(PowerModule):
             out = outs_top_down[i]
             residual = out_fixed[i]
             if i != 0 and i != len(outs_top_down) - 1:
-                hidden = self.weighted_sum_3_input[i - 1](out, self.downsamples[i - 1](hidden), residual)
+                hidden = self.weighted_sum_3_input[i - 1](
+                    [out, self.downsamples[i - 1](hidden), residual])
                 out = self.conv_down_3x3s[i - 1](hidden)
             elif i == len(outs_top_down) - 1:
-                hidden = self.weighted_sum_2_input[0](self.downsamples[i - 1](hidden), residual)
+                hidden = self.weighted_sum_2_input[0](
+                    [self.downsamples[i - 1](hidden), residual])
                 out = self.conv_down_3x3s[i - 1](hidden)
 
             hidden = out
@@ -274,7 +278,8 @@ class BiFPN(PowerModule):
             out_channels=out_channels,
             extra_layers=extra_layers,
             out_indices=out_indices,
-            norm=nn.BatchNorm2d(num_features=out_channels, momentum=0.003, eps=1e-4),
+            norm=nn.BatchNorm2d(num_features=out_channels,
+                                momentum=0.003, eps=1e-4),
             act=nn.ReLU(False),
             upsample_mode=upsample_mode,
             use_conv=True,
@@ -296,7 +301,8 @@ class BiFPN(PowerModule):
             out_channels=out_channels,
             extra_layers=extra_layers,
             out_indices=out_indices,
-            norm=nn.BatchNorm2d(num_features=out_channels, momentum=0.003, eps=1e-4),
+            norm=nn.BatchNorm2d(num_features=out_channels,
+                                momentum=0.003, eps=1e-4),
             act=nn.ReLU(False),
             upsample_mode=upsample_mode,
             use_conv=False,
@@ -354,7 +360,8 @@ class BiFPNs(PowerModule):
         self.block = nn.ModuleList([
             getattr(BiFPN, cls_method)(
                 out_channels=out_channels,
-                in_channels_list=in_channels_list if i == 0 else [out_channels] * num_out_features,
+                in_channels_list=in_channels_list if i == 0 else [
+                    out_channels] * num_out_features,
                 extra_layers=extra_layers if i == 0 else 0,
                 out_indices=out_indices if i == n_bifpn - 1 else None,
                 attention=attention,

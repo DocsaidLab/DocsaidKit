@@ -168,7 +168,7 @@ class WeightedSum(nn.Module):
                 else build_activation(**act)
         self.epsilon = 1e-4
 
-    def forward(self, *x: List[torch.Tensor]) -> torch.Tensor:
+    def forward(self, x: List[torch.Tensor]) -> torch.Tensor:
         if len(x) != self.input_size:
             raise ValueError('Invalid input size not equal to weight size.')
         weights = self.weights_relu(self.weights)

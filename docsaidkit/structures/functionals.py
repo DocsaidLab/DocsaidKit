@@ -188,24 +188,30 @@ def jaccard_index(
     transformed_pred_coords = cv2.perspectiveTransform(
         pred_poly.reshape(-1, 1, 2), M)
 
-    poly_target = ShapelyPolygon(object_coord_target)
-    poly_pred = ShapelyPolygon(transformed_pred_coords.reshape(-1, 2))
-    poly_inter = poly_target & poly_pred
+    try:
+        poly_target = ShapelyPolygon(object_coord_target)
+        poly_pred = ShapelyPolygon(transformed_pred_coords.reshape(-1, 2))
+        poly_inter = poly_target & poly_pred
 
-    area_target = poly_target.area
-    area_test = poly_pred.area
-    area_inter = poly_inter.area
+        area_target = poly_target.area
+        area_test = poly_pred.area
+        area_inter = poly_inter.area
 
-    area_union = area_test + area_target - area_inter
-    # Little hack to cope with float precision issues when dealing with polygons:
-    #   If intersection area is close enough to target area or GT area, but slighlty >,
-    #   then fix it, assuming it is due to rounding issues.
-    area_min = min(area_target, area_test)
-    if area_min < area_inter and area_min * 1.0000000001 > area_inter:
-        area_inter = area_min
-        print("Capping area_inter.")
+        area_union = area_test + area_target - area_inter
+        # Little hack to cope with float precision issues when dealing with polygons:
+        #   If intersection area is close enough to target area or GT area, but slighlty >,
+        #   then fix it, assuming it is due to rounding issues.
+        area_min = min(area_target, area_test)
+        if area_min < area_inter and area_min * 1.0000000001 > area_inter:
+            area_inter = area_min
+            print("Capping area_inter.")
 
-    jaccard_index = area_inter / area_union
+        jaccard_index = area_inter / area_union
+    except:
+        # 通常錯誤來自於：
+        # TopologyException: Input geom 1 is invalid: Ring Self-intersection
+        # 表示多邊形自己交叉了，這時候就直接給 0
+        jaccard_index = 0
 
     return jaccard_index
 
@@ -231,23 +237,29 @@ def polygon_iou(poly1: Polygon, poly2: Polygon):
     poly1 = poly1.numpy().astype(np.float32)
     poly2 = poly2.numpy().astype(np.float32)
 
-    poly1 = ShapelyPolygon(poly1)
-    poly2 = ShapelyPolygon(poly2)
-    poly_inter = poly1 & poly2
+    try:
+        poly1 = ShapelyPolygon(poly1)
+        poly2 = ShapelyPolygon(poly2)
+        poly_inter = poly1 & poly2
 
-    area_target = poly1.area
-    area_test = poly2.area
-    area_inter = poly_inter.area
+        area_target = poly1.area
+        area_test = poly2.area
+        area_inter = poly_inter.area
 
-    area_union = area_test + area_target - area_inter
-    # Little hack to cope with float precision issues when dealing with polygons:
-    #   If intersection area is close enough to target area or GT area, but slighlty >,
-    #   then fix it, assuming it is due to rounding issues.
-    area_min = min(area_target, area_test)
-    if area_min < area_inter and area_min * 1.0000000001 > area_inter:
-        area_inter = area_min
-        print("Capping area_inter.")
+        area_union = area_test + area_target - area_inter
+        # Little hack to cope with float precision issues when dealing with polygons:
+        #   If intersection area is close enough to target area or GT area, but slighlty >,
+        #   then fix it, assuming it is due to rounding issues.
+        area_min = min(area_target, area_test)
+        if area_min < area_inter and area_min * 1.0000000001 > area_inter:
+            area_inter = area_min
+            print("Capping area_inter.")
 
-    iou = area_inter / area_union
+        iou = area_inter / area_union
+    except:
+        # 通常錯誤來自於：
+        # TopologyException: Input geom 1 is invalid: Ring Self-intersection
+        # 表示多邊形自己交叉了，這時候就直接給 0
+        iou = 0
 
     return iou

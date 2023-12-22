@@ -204,7 +204,6 @@ def jaccard_index(
         area_min = min(area_target, area_test)
         if area_min < area_inter and area_min * 1.0000000001 > area_inter:
             area_inter = area_min
-            print("Capping area_inter.")
 
         jaccard_index = area_inter / area_union
     except:
@@ -253,7 +252,6 @@ def polygon_iou(poly1: Polygon, poly2: Polygon):
         area_min = min(area_target, area_test)
         if area_min < area_inter and area_min * 1.0000000001 > area_inter:
             area_inter = area_min
-            print("Capping area_inter.")
 
         iou = area_inter / area_union
     except:

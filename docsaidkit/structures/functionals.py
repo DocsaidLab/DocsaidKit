@@ -6,7 +6,7 @@ import numpy as np
 from shapely.geometry import Polygon as ShapelyPolygon
 
 from .boxes import Boxes
-from .polygons import Polygon
+from .polygons import Polygon, order_points_clockwise
 
 __all__ = [
     'pairwise_intersection', 'pairwise_iou', 'pairwise_ioa', 'merge_boxes',
@@ -170,7 +170,9 @@ def jaccard_index(
         raise ValueError(f'Input image size must be provided.')
 
     pred_poly = pred_poly.astype(np.float32)
+    pred_poly = order_points_clockwise(pred_poly)
     gt_poly = gt_poly.astype(np.float32)
+    gt_poly = order_points_clockwise(gt_poly)
 
     height, width = image_size
     object_coord_target = np.array([
@@ -188,18 +190,24 @@ def jaccard_index(
     transformed_pred_coords = cv2.perspectiveTransform(
         pred_poly.reshape(-1, 1, 2), M)
 
-    try:
-        poly_target = ShapelyPolygon(object_coord_target)
-        poly_pred = ShapelyPolygon(transformed_pred_coords.reshape(-1, 2))
-        intersection = poly_target.intersection(poly_pred).area
-        union = poly_target.union(poly_pred).area
-        iou = intersection / union
-        jaccard_index = iou if union != 0 else 0
-    except:
-        # 通常錯誤來自於：
-        # TopologyException: Input geom 1 is invalid: Ring Self-intersection
-        # 表示多邊形自己交叉了，這時候就直接給 0
-        jaccard_index = 0
+    poly_target = ShapelyPolygon(object_coord_target)
+    poly_pred = ShapelyPolygon(transformed_pred_coords.reshape(-1, 2))
+    poly_inter = poly_target & poly_pred
+
+    area_target = poly_target.area()
+    area_test = poly_pred.area()
+    area_inter = poly_inter.area()
+
+    area_union = area_test + area_target - area_inter
+    # Little hack to cope with float precision issues when dealing with polygons:
+    #   If intersection area is close enough to target area or GT area, but slighlty >,
+    #   then fix it, assuming it is due to rounding issues.
+    area_min = min(area_target, area_test)
+    if area_min < area_inter and area_min * 1.0000000001 > area_inter:
+        area_inter = area_min
+        print("Capping area_inter.")
+
+    jaccard_index = area_inter / area_union
 
     return jaccard_index
 

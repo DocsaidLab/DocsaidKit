@@ -45,13 +45,15 @@ class ONNXEngine:
         self.device_id = 0 if backend.name == 'cpu' else gpu_id
 
         # setting provider options
-        providers, provider_options = self._get_provider_info(backend, provider_option)
+        providers, provider_options = self._get_provider_info(
+            backend, provider_option)
 
         # setting session options
         sess_options = self._get_session_info(session_option)
 
         # setting onnxruntime session
-        model_path = str(model_path) if isinstance(model_path, Path) else model_path
+        model_path = str(model_path) if isinstance(
+            model_path, Path) else model_path
         self.sess = ort.InferenceSession(
             model_path,
             sess_options=sess_options,
@@ -115,37 +117,50 @@ class ONNXEngine:
             }]
         elif backend == Backend.cpu:
             providers = ['CPUExecutionProvider']
-            provider_option = None  # "CPUExecutionProvider" is different from everything else.
+            # "CPUExecutionProvider" is different from everything else.
+            provider_option = None
         else:
             raise ValueError(f'backend={backend} is not supported.')
         return providers, provider_option
 
     def __repr__(self) -> str:
-        title = '|    Docsaid X ONNXRUNTIME    |\n'
-        divider = f"+{'-' * (len(title) - 3)}+\n"
-        title = colored.stylize(title, [colored.fg('blue'), colored.attr('bold')])
-        divider = colored.stylize(divider, [colored.fg('blue'), colored.attr('bold')])
-        path = f'ModelPath: {self.model_path}\n'
+        def format_nested_dict(dict_data, indent=0):
+            info = ""
+            for k, v in dict_data.items():
+                prefix = "  " * indent
+                if isinstance(v, dict):
+                    info += f"{prefix}{k}:\n" + \
+                        format_nested_dict(v, indent + 1)
+                elif isinstance(v, str) and v.startswith('{') and v.endswith('}'):
+                    try:
+                        nested_dict = eval(v)
+                        if isinstance(nested_dict, dict):
+                            info += f"{prefix}{k}:\n" + \
+                                format_nested_dict(nested_dict, indent + 1)
+                        else:
+                            info += f"{prefix}{k}: {v}\n"
+                    except:
+                        info += f"{prefix}{k}: {v}\n"
+                else:
+                    info += f"{prefix}{k}: {v}\n"
+            return info
 
-        info = 'Input:\n'
-        for k, v in self.input_infos.items():
-            info += f'\t{k}: {v}\n'
+        title = 'DOCSAID X ONNXRUNTIME'
+        styled_title = colored.stylize(
+            title, [colored.fg('blue'), colored.attr('bold')])
+        divider_length = 50
+        title_length = len(title)
+        left_padding = (divider_length - title_length) // 2
+        right_padding = divider_length - title_length - left_padding
 
-        info += 'Output:\n'
-        for k, v in self.output_infos.items():
-            info += f'\t{k}: {v}\n'
+        path = f'Model Path: {self.model_path}'
+        input_info = format_nested_dict(self.input_infos)
+        output_info = format_nested_dict(self.output_infos)
+        metadata = format_nested_dict(self.metadata)
+        providers = f'Provider: {", ".join(self.providers)}'
+        provider_options = format_nested_dict(self.provider_options)
 
-        metadata = 'MetaData:\n'
-        for k, v in self.metadata.items():
-            metadata += f'\t{k}: {v}\n'
-
-        providers = f'Provider: {self.providers}\n'
-
-        provider_options = 'ProviderOptions:\n'
-        for k, v in self.provider_options.items():
-            provider_options += f'\t{k}:\n'
-            for kk, vv in v.items():
-                provider_options += f'\t\t{kk}: {vv}\n'
-
-        infos = f'{divider}{title}{divider}\n{path}{info}{metadata}{providers}{provider_options}'
+        divider = colored.stylize(
+            f"+{'-' * divider_length}+", [colored.fg('blue'), colored.attr('bold')])
+        infos = f'\n\n{divider}\n|{" " * left_padding}{styled_title}{" " * right_padding}|\n{divider}\n\n{path}\n\n{input_info}\n{output_info}\n\n{metadata}\n\n{providers}\n\n{provider_options}\n{divider}'
         return infos

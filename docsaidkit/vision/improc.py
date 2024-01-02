@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import piexif
 import pybase64
+import pyheif
 from pdf2image import convert_from_bytes, convert_from_path
 from turbojpeg import TurboJPEG
 
@@ -60,7 +61,8 @@ def jpgdecode(byte_: bytes) -> Union[np.ndarray, None]:
     try:
         bgr_array = jpeg.decode(byte_)
         code = get_orientation_code(byte_)
-        bgr_array = imrotate90(bgr_array, code) if code is not None else bgr_array
+        bgr_array = imrotate90(
+            bgr_array, code) if code is not None else bgr_array
     except:
         bgr_array = None
 
@@ -79,7 +81,8 @@ def pngencode(img: np.ndarray, compression: int = 1) -> Union[bytes, None]:
     byte_ = None
     if is_numpy_img(img):
         try:
-            byte_ = cv2.imencode('.png', img, params=[int(cv2.IMWRITE_PNG_COMPRESSION), compression])[1].tobytes()
+            byte_ = cv2.imencode('.png', img, params=[int(
+                cv2.IMWRITE_PNG_COMPRESSION), compression])[1].tobytes()
         except:
             pass
     return byte_
@@ -177,6 +180,20 @@ def npyread(path: Union[str, Path]) -> Union[np.ndarray, None]:
     return img
 
 
+def read_heic_to_numpy(file_path: str):
+    heif_file = pyheif.read(file_path)
+    data = heif_file.data
+    if heif_file.mode == "RGB":
+        numpy_array = np.frombuffer(data, dtype=np.uint8).reshape(
+            heif_file.size[1], heif_file.size[0], 3)
+    elif heif_file.mode == "RGBA":
+        numpy_array = np.frombuffer(data, dtype=np.uint8).reshape(
+            heif_file.size[1], heif_file.size[0], 4)
+    else:
+        raise ValueError("Unsupported HEIC color mode")
+    return numpy_array
+
+
 def imread(
     path: Union[str, Path],
     color_base: str = 'BGR',
@@ -206,14 +223,22 @@ def imread(
     """
     if not Path(path).exists():
         raise FileExistsError(f'{path} can not found.')
-    img = jpgread(path)
-    img = cv2.imread(str(path)) if img is None else img
+
+    if Path(path).suffix.lower() == '.heic':
+        img = read_heic_to_numpy(str(path))
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    else:
+        img = jpgread(path)
+        img = cv2.imread(str(path)) if img is None else img
+
     if img is None:
         if verbose:
             warnings.warn("Got a None type image.")
         return
+
     if color_base != 'BGR':
         img = imcvtcolor(img, cvt_mode=f'BGR2{color_base}')
+
     return img
 
 
@@ -265,5 +290,3 @@ def pdf2imgs(stream: Union[str, Path, bytes]) -> Union[List[np.ndarray], None]:
         return [imcvtcolor(np.array(img), cvt_mode='RGB2BGR') for img in pil_imgs]
     except:
         return
-
-

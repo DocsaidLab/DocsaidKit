@@ -44,14 +44,14 @@ Before starting the installation of DocsaidKit, ensure you have met the followin
    - **Ubuntu**:
 
      ```bash
-     sudo apt install libturbojpeg exiftool ffmpeg
+     sudo apt install libturbojpeg exiftool ffmpeg libheif-dev
      ```
 
    - **MacOS**:
 
      ```bash
      # Install using brew
-     brew install jpeg-turbo exiftool ffmpeg
+     brew install jpeg-turbo exiftool ffmpeg libheif
      ```
 
 3. **Installation of pdf2image**:

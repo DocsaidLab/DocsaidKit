@@ -70,6 +70,8 @@ def load_model_from_config(
             f'MODEL Load from checkpoint {colorstr(checkpoint_path)}... Done.',
             flush=True
         )
+        if cfg.common.restore_all_states:
+            cfg.common['checkpoint_path'] = checkpoint_path
     else:
         model = getattr(network, net_name)(cfg=cfg)
 

@@ -4,6 +4,7 @@ import os
 from typing import Any, List, Tuple, Union
 
 import dill
+import numpy as np
 import ujson
 import yaml
 from natsort import natsorted
@@ -13,7 +14,7 @@ from .custom_tqdm import Tqdm
 
 __all__ = [
     'gen_md5', 'get_files', 'load_json', 'dump_json', 'load_pickle',
-    'dump_pickle', 'load_yaml', 'dump_yaml',
+    'dump_pickle', 'load_yaml', 'dump_yaml', 'img_to_md5',
 ]
 
 
@@ -36,6 +37,14 @@ def gen_md5(file: Union[str, Path], block_size: int = 256 * 128) -> str:
         for chunk in iter(lambda: f.read(block_size), b''):
             md5.update(chunk)
     return str(md5.hexdigest())
+
+
+def img_to_md5(img: np.ndarray) -> str:
+    if not isinstance(img, np.ndarray):
+        raise TypeError("Input must be a numpy array.")
+    image_bytes = img.tobytes()
+    md5_hash = hashlib.md5(image_bytes)
+    return str(md5_hash.hexdigest())
 
 
 def load_json(path: Union[Path, str], **kwargs) -> dict:

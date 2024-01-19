@@ -1,3 +1,4 @@
+import math
 from typing import Union
 
 import torch
@@ -10,6 +11,7 @@ __all__ = [
     'build_loss', 'AWingLoss', 'WeightedAWingLoss',
     'BCELoss', 'BCEWithLogitsLoss', 'CrossEntropyLoss',
     'CTCLoss', 'KLDivLoss', 'L1Loss', 'MSELoss', 'SmoothL1Loss',
+    'ArcFace', 'CosFace'
 ]
 
 
@@ -87,3 +89,42 @@ def build_loss(name: str, **options) -> Union[nn.Module, None]:
     if cls is None:
         raise KeyError(f'Unsupported loss func: {name}')
     return cls(**options)
+
+
+class ArcFace(nn.Module):
+
+    def __init__(self, s=64.0, m=0.5):
+        super(ArcFace, self).__init__()
+        self.s = s
+        self.margin = m
+        self.cos_m = math.cos(m)
+        self.sin_m = math.sin(m)
+        self.theta = math.cos(math.pi - m)
+        self.sinmm = math.sin(math.pi - m) * m
+        self.easy_margin = False
+
+    def forward(self, logits: torch.Tensor, labels: torch.Tensor):
+        index = torch.where(labels != -1)[0]
+        target_logit = logits[index, labels[index].view(-1)]
+        with torch.no_grad():
+            target_logit.arccos_()
+            logits.arccos_()
+            final_target_logit = target_logit + self.margin
+            logits[index, labels[index].view(-1)] = final_target_logit
+            logits.cos_()
+        logits = logits * self.s
+        return logits
+
+
+class CosFace(nn.Module):
+
+    def __init__(self, s=64.0, m=0.40):
+        super(CosFace, self).__init__()
+        self.s = s
+        self.m = m
+
+    def forward(self, logits: torch.Tensor, labels: torch.Tensor):
+        index = torch.where(labels != -1)[0]
+        logits[index, labels[index].view(-1)] -= self.m
+        logits *= self.s
+        return logits

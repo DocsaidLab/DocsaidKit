@@ -14,6 +14,7 @@ RUN mkdir -p /app/matplotlib_config /app/transformers_cache
 # 設置環境變量
 ENV MPLCONFIGDIR /app/matplotlib_config
 ENV TRANSFORMERS_CACHE /app/transformers_cache
+ENV LD_PRELOAD /usr/lib/x86_64-linux-gnu/libffi.so.7
 
 # 確保目錄具有正確的權限
 RUN chmod -R 777 /app/matplotlib_config /app/transformers_cache
@@ -37,17 +38,18 @@ RUN chmod -R 777 /app/matplotlib_config /app/transformers_cache
 # libharfbuzz-dev -> 用於處理 Unicode 文本的庫
 # libfribidi-dev -> 用於處理 Unicode 文本的庫
 # libxcb1-dev -> X 協議 C-language Binding庫
+# libfftw3-dev -> 用於處理快速傅立葉轉換的庫
 RUN apt update -y && apt upgrade -y && apt install -y git \
     libturbojpeg exiftool ffmpeg poppler-utils libpng-dev \
     libtiff5-dev libjpeg8-dev libopenjp2-7-dev zlib1g-dev \
     libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk \
-    libharfbuzz-dev libfribidi-dev libxcb1-dev && rm -rf /var/lib/apt/lists/*
+    libharfbuzz-dev libfribidi-dev libxcb1-dev libfftw3-dev && rm -rf /var/lib/apt/lists/*
 
 RUN python -m pip install -U setuptools pip wheel
 
 # For training
 RUN python -m pip install -U tqdm colored ipython tabulate \
-    tensorboard scikit-learn fire albumentations Pillow>=10.0.0
+    tensorboard scikit-learn fire albumentations Pillow>=10.0.0 fitsne
 
 # 安裝 docsaidkit
 COPY . /usr/local/DocsaidKit

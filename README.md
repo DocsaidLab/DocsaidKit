@@ -112,6 +112,33 @@ Note: This package is only available through our internal Pypi service. External
        "DocsaidKit[torch]==$version"
      ```
 
+**Note:**
+
+Set up a local Pypi server and install from there. In case you need to modify your PIP configuration, please be aware that some configuration files may have a priority order. Here are the following files that may exists in your machine by order of priority:
+
+   - [Priority 1] Site level configuration files
+
+      1. `/home/user/.pyenv/versions/3.x.x/envs/envs_name/pip.conf`
+
+   - [Priority 2] User level configuration files
+
+      1. `/home/user/.config/pip/pip.conf`
+      2. `/home/user/.pip/pip.conf`
+
+   - [Priority 3] Global level configuration files
+
+      1. `/etc/pip.conf`
+      2. `/etc/xdg/pip/pip.conf`
+
+And the content of the configuration file should be like this:
+
+```bash
+[global]
+no-cache-dir = true
+index-url = your_pypi_server_url
+trusted-host = your_pypi_server_ip
+```
+
 #### MacOS-Arm64
 
 Due to constraints with MacOS-Arm64, we recommend installation via conda.

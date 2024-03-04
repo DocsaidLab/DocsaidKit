@@ -1,3 +1,4 @@
+import os
 from pprint import pprint
 from typing import Any, Generator, Iterable, List, Union
 
@@ -5,7 +6,7 @@ from ..enums import COLORSTR, FORMATSTR
 
 __all__ = [
     'make_batch', 'colorstr', 'gen_download_cmd', 'pprint',
-    'gen_download_docsaid_cmd',
+    'download_from_docsaid',
 ]
 
 
@@ -75,5 +76,7 @@ def gen_download_cmd(file_id: str, target: str):
     """
 
 
-def gen_download_docsaid_cmd(file_id: str, file_name: str):
-    return f"wget https://docsaidlab.com/s/{file_id}/download/{file_name}"
+def download_from_docsaid(file_id: str, file_name: str, target: str):
+    os.system(
+        f"wget https://docsaidlab.com/s/{file_id}/download/{file_name} -O {target}"
+    )

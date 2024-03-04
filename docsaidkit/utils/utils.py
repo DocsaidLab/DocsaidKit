@@ -5,6 +5,7 @@ from ..enums import COLORSTR, FORMATSTR
 
 __all__ = [
     'make_batch', 'colorstr', 'gen_download_cmd', 'pprint',
+    'gen_download_docsaid_cmd',
 ]
 
 
@@ -72,3 +73,7 @@ def gen_download_cmd(file_id: str, target: str):
         --no-check-certificate 'https://docs.google.com/uc?export=download&id={file_id}'
         -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id={file_id}" -O {target} && rm -rf /tmp/cookies.txt
     """
+
+
+def gen_download_docsaid_cmd(file_id: str, file_name: str):
+    return f"wget https://docsaidlab.com/s/{file_id}/download/{file_name}"

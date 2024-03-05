@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM nvcr.io/nvidia/pytorch:22.12-py3
+FROM nvcr.io/nvidia/pytorch:24.02-py3
 
 # 這確保在運行 apt 命令時不會有任何用戶交互。
 # 這是為了確保 Docker 映像建構過程自動進行，無需人工介入。
@@ -14,7 +14,6 @@ RUN mkdir -p /app/matplotlib_config /app/transformers_cache
 # 設置環境變量
 ENV MPLCONFIGDIR /app/matplotlib_config
 ENV TRANSFORMERS_CACHE /app/transformers_cache
-ENV LD_PRELOAD /usr/lib/x86_64-linux-gnu/libffi.so.7
 
 # 確保目錄具有正確的權限
 RUN chmod -R 777 /app/matplotlib_config /app/transformers_cache
@@ -58,10 +57,7 @@ RUN cd /usr/local/DocsaidKit && python setup.py bdist_wheel && \
     rm -rf /usr/local/DocsaidKit
 
 # Fixed 4.8.0.76 import error
-RUN pip install opencv-python==4.8.0.74
-
-# Fixed "ModuleNotFoundError: No module named 'onnx.reference'" error
-RUN pip install onnx -U
+RUN python -m pip install opencv-python==4.8.0.74
 
 # Preload data
 RUN python -c "import docsaidkit"

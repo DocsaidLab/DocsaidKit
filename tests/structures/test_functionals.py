@@ -119,28 +119,6 @@ def test_polygon_iou(poly1, poly2, expected):
     assert polygon_iou(poly1, poly2) == expected
 
 
-test_polygon_iou_error_param = [
-    (
-        Polygon(np.array([[0, 0], [0, 10], [10, 10]])),
-        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5]])),
-        ValueError,
-        'Input polygon must be 4-point polygon.'
-    ),
-    (
-        Polygon(np.array([[0, 0], [0, 10], [10, 10], [10, 0]])),
-        Polygon(np.array([[5, 5], [5, 15], [15, 15], [15, 5], [5, 5]])),
-        ValueError,
-        'Input polygon must be 4-point polygon.'
-    ),
-]
-
-
-@pytest.mark.parametrize('poly1, poly2, error, match', test_polygon_iou_error_param)
-def test_polygon_iou_error(poly1, poly2, error, match):
-    with pytest.raises(error, match=match):
-        polygon_iou(poly1, poly2)
-
-
 test_jaccard_index_param = [
     (
         np.array([[0, 0], [0, 10], [10, 10], [10, 0]]),

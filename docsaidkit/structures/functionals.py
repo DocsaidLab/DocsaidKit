@@ -219,19 +219,14 @@ def polygon_iou(poly1: Polygon, poly2: Polygon):
     """
     Compute the IoU of two polygons.
     Args:
-        poly1 (Polygon):
-            Predicted polygon, a 4-point polygon.
-        poly2 (Polygon):
-            Ground truth polygon, a 4-point polygon.
+        poly1 (Polygon): Predicted polygon.
+        poly2 (Polygon): Ground truth polygon.
 
     Returns:
         float: IoU.
     """
     if not isinstance(poly1, Polygon) or not isinstance(poly2, Polygon):
         raise TypeError(f'Input type of poly1 and poly2 must be Polygon.')
-
-    if poly1.numpy().shape != (4, 2) or poly2.numpy().shape != (4, 2):
-        raise ValueError(f'Input polygon must be 4-point polygon.')
 
     poly1 = poly1.numpy().astype(np.float32)
     poly2 = poly2.numpy().astype(np.float32)

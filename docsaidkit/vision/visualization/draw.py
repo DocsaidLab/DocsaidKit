@@ -368,7 +368,8 @@ def draw_mask(
     mask: np.ndarray,
     colormap: int = cv2.COLORMAP_JET,
     weight: Tuple[float, float] = (0.5, 0.5),
-    gamma: float = 0
+    gamma: float = 0,
+    min_max_normalize: bool = False
 ) -> np.ndarray:
     """
     Draw the mask on the image.
@@ -384,6 +385,8 @@ def draw_mask(
             Weights for the image and the mask. Defaults to (0.5, 0.5).
         gamma (float, optional):
             Gamma value for the mask. Defaults to 0.
+        min_max_normalize (bool, optional):
+            Whether to normalize the mask to the range [0, 1]. Defaults to False.
 
     Returns:
         np.ndarray: The image with the drawn mask.
@@ -396,8 +399,16 @@ def draw_mask(
     if mask.ndim != 2:
         raise ValueError("Mask should be a 2D array.")
 
+    if min_max_normalize:
+        mask = mask.astype(np.float32)
+        mask = (mask - mask.min()) / (mask.max() - mask.min())
+
     if mask.dtype == np.float32:
         mask = np.uint8(np.clip(mask * 255, 0, 255))
+
+    if mask.dtype != np.uint8:
+        raise ValueError(
+            "Mask should be a 2D array of type np.uint8 or np.float32.")
 
     mask = imresize(mask, size=(img.shape[0], img.shape[1]))
     mask = cv2.applyColorMap(mask, colormap)

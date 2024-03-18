@@ -8,10 +8,11 @@ from PIL import Image, ImageDraw, ImageFont
 
 from ...structures import Box, Boxes, Polygon, Polygons
 from ...utils import download_from_docsaid, get_curdir
+from ..geometric import imresize
 
 __all__ = [
     'draw_box', 'draw_boxes', 'draw_polygon', 'draw_polygons', 'draw_text',
-    'generate_colors', 'draw_ocr_infos',
+    'generate_colors', 'draw_ocr_infos', 'draw_mask',
 ]
 
 DIR = get_curdir(__file__)
@@ -360,3 +361,46 @@ def draw_ocr_infos(
         )
 
     return np.concatenate([export_img1, export_img2], axis=concat_axis)
+
+
+def draw_mask(
+    img: np.ndarray,
+    mask: np.ndarray,
+    colormap: int = cv2.COLORMAP_JET,
+    weight: Tuple[float, float] = (0.5, 0.5),
+    gamma: float = 0
+) -> np.ndarray:
+    """
+    Draw the mask on the image.
+
+    Args:
+        img (np.ndarray):
+            The image to draw on.
+        mask (np.ndarray):
+            The mask to draw.
+        colormap (int, optional):
+            The colormap to use for the mask. Defaults to cv2.COLORMAP_JET.
+        weight (Tuple[float, float], optional):
+            Weights for the image and the mask. Defaults to (0.5, 0.5).
+        gamma (float, optional):
+            Gamma value for the mask. Defaults to 0.
+
+    Returns:
+        np.ndarray: The image with the drawn mask.
+    """
+
+    img = img.copy()
+    if img.ndim == 2:
+        img = np.stack([img] * 3, axis=-1)
+
+    if mask.ndim != 2:
+        raise ValueError("Mask should be a 2D array.")
+
+    if mask.dtype == np.float32:
+        mask = np.uint8(np.clip(mask * 255, 0, 255))
+
+    mask = imresize(mask, size=(img.shape[0], img.shape[1]))
+    mask = cv2.applyColorMap(mask, colormap)
+    img_mask = cv2.addWeighted(img, weight[0], mask, weight[1], gamma)
+
+    return img_mask

@@ -18,6 +18,12 @@ ENV TRANSFORMERS_CACHE /app/transformers_cache
 # 確保目錄具有正確的權限
 RUN chmod -R 777 /app/matplotlib_config /app/transformers_cache
 
+# 安裝 tzdata 套件並設定時區為 Asia/Taipei
+RUN apt update -y && apt install -y tzdata && \
+    ln -fs /usr/share/zoneinfo/Asia/Taipei /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata
+ENV TZ=Asia/Taipei
+
 # 安裝基本套件
 # libturbojpeg -> 用於 JPEG 圖像的庫
 # exiftool -> 用於讀取圖像 EXIF 資訊

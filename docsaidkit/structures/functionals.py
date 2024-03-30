@@ -1,15 +1,14 @@
 from typing import Tuple
 
 import cv2
-import networkx as nx
 import numpy as np
 from shapely.geometry import Polygon as ShapelyPolygon
 
 from .boxes import Boxes
-from .polygons import Polygon, order_points_clockwise
+from .polygons import Polygon
 
 __all__ = [
-    'pairwise_intersection', 'pairwise_iou', 'pairwise_ioa', 'merge_boxes',
+    'pairwise_intersection', 'pairwise_iou', 'pairwise_ioa',
     'jaccard_index', 'polygon_iou'
 ]
 
@@ -89,57 +88,6 @@ def pairwise_ioa(boxes1: Boxes, boxes2: Boxes) -> np.ndarray:
     inter = pairwise_intersection(boxes1, boxes2)
 
     return inter / area2
-
-
-def merge_boxes(boxes: Boxes, threshold: float = 0) -> Tuple["Boxes", list]:
-    """
-    Function to merge the overlapping bounding boxes.
-    This function uses graph theory to analyze the associated bbox,
-    and "networx" package have to be installed before calling function.
-
-    Installing package as follows:
-        pip install networx
-
-    NetworkX is a Python package for the creation, manipulation, and
-    study of the structure, dynamics, and functions of complex networks.
-
-    Args:
-        bboxes (Boxes):
-            Input bounding boxes.
-        threshold (float):
-            The overlap ratio (range in 0~1) between two bboxes larger
-            than threshold will be merged.
-
-    Returns:
-        merged_boxes (Boxes): Output merged bounding boxes.
-        merged_idx (bool): Output groups of merged index of bounding boxes.
-    """
-    ratio = pairwise_iou(boxes, boxes)
-    ratio = np.tril(ratio, 0)
-
-    # get components
-    xx, yy = np.where(ratio > threshold)
-    edges = [(x, y) for x, y in zip(xx, yy)]
-    graph = nx.Graph()
-    graph.add_edges_from(edges)
-
-    # merge bboxes
-    mboxes, mlabel = [], []
-    arr = boxes.convert('XYXY').numpy()
-    for conn in nx.connected_components(graph):
-        conn = list(conn)
-        if arr[conn, :].shape[0] == 1:
-            mboxes.append(arr[conn, :][0])
-        else:
-            x1 = arr[conn, :][:, 0].min()
-            y1 = arr[conn, :][:, 1].min()
-            x2 = arr[conn, :][:, 2].max()
-            y2 = arr[conn, :][:, 3].max()
-            mboxes.append(np.array((x1, y1, x2, y2)))
-        mlabel.append(conn)
-    mboxes = Boxes(mboxes, box_mode='XYXY').convert(boxes.box_mode)
-
-    return mboxes, mlabel
 
 
 def jaccard_index(

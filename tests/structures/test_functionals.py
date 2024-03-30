@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-from docsaidkit import (Boxes, Polygon, jaccard_index, merge_boxes,
-                        pairwise_ioa, pairwise_iou, polygon_iou)
+from docsaidkit import (Boxes, Polygon, jaccard_index, pairwise_ioa,
+                        pairwise_iou, polygon_iou)
 
 test_functionals_error_param = [
     (
@@ -63,46 +63,6 @@ test_pairwise_ioa_param = [(
 @pytest.mark.parametrize('boxes1, boxes2, expected', test_pairwise_ioa_param)
 def test_pairwise_ioa(boxes1, boxes2, expected):
     assert (pairwise_ioa(boxes1, boxes2) == expected).all()
-
-
-test_merge_boxes_input = Boxes(np.array([
-    [10, 10, 10, 10],
-    [15, 15, 10, 10],
-    [25, 25, 10, 10]
-]), "XYWH")
-
-test_merge_boxes_param = [
-    (
-        0,
-        np.array([
-            [10, 10, 15, 15],
-            [25, 25, 10, 10]
-        ]),
-        [[0, 1], [2]]
-    ),
-    (
-        0.25,
-        np.array([
-            [10, 10, 10, 10],
-            [15, 15, 10, 10],
-            [25, 25, 10, 10]
-        ]),
-        [[0], [1], [2]]
-    ),
-]
-
-
-@pytest.mark.parametrize('threshold, expected1, expected2', test_merge_boxes_param)
-def test_merge_boxes(threshold, expected1, expected2):
-    boxes, mlabel = merge_boxes(test_merge_boxes_input, threshold)
-    assert (boxes.numpy() == expected1).all()
-    for m, e in zip(mlabel, expected2):
-        assert type(m) == type(e)
-        if isinstance(m, list):
-            for m_, e_ in zip(m, e):
-                assert m_ == e_
-        else:
-            assert m == e
 
 
 test_polygon_iou_param = [

@@ -410,6 +410,12 @@ class Polygons:
         polygons = self.__class__(_polygons, normalized=False)
         return polygons
 
+    def clip(self, xmin: int, ymin: int, xmax: int, ymax: int) -> "Polygons":
+        return Polygons([p.clip(xmin, ymin, xmax, ymax) for p in self._polygons])
+
+    def shift(self, shift_x: float, shift_y: float) -> "Polygons":
+        return Polygons([p.shift(shift_x, shift_y) for p in self._polygons])
+
     def scale(self, distance: int) -> "Polygons":
         return Polygons([p.scale(distance) for p in self._polygons]).drop_empty()
 

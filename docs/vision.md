@@ -45,7 +45,7 @@
   - [`imdilate`](#2-imdilate)
   - [`imopen`](#3-imopen)
   - [`imclose`](#4-imclose)
-  - [`imgrandient`](#5-imgrandient)
+  - [`imgradient`](#5-imgradient)
   - [`imtophat`](#6-imtophat)
   - [`imblackhat`](#7-imblackhat)
 - [IP Camera (`ipcam`)](#ip-camera-ipcam)
@@ -289,7 +289,7 @@
 - **參數**:
     - 同上。
 
-### 5. `imgrandient`：
+### 5. `imgradient`：
 - **功能**: 計算影像的形態學梯度，即膨脹圖像和腐蝕圖像的差。
 - **參數**:
     - 同上。

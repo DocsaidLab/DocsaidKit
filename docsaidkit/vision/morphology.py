@@ -7,7 +7,7 @@ from ..enums import MORPH
 
 __all__ = [
     'imerode', 'imdilate', 'imopen', 'imclose',
-    'imgrandient', 'imtophat', 'imblackhat',
+    'imgradient', 'imtophat', 'imblackhat',
 ]
 
 
@@ -132,7 +132,7 @@ def imclose(
     return cv2.morphologyEx(img, cv2.MORPH_CLOSE, cv2.getStructuringElement(kstruct, ksize))
 
 
-def imgrandient(
+def imgradient(
     img: np.ndarray,
     ksize: Union[int, Tuple[int, int]] = (3, 3),
     kstruct: Union[str, int, MORPH] = MORPH.RECT

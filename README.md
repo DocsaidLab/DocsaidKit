@@ -29,6 +29,12 @@ DocsaidKit is structured into the following main modules:
 
 Our aim with DocsaidKit is to streamline the development process in deep learning and computer vision, providing a clear structure and modular design for ease of finding and extending functionalities.
 
+## Technical Documentation
+
+For detailed information on DocsaidKit, refer to the following documentation:
+
+- [**DocsaidKit Documents**](https://docsaid.org/category/docsaidkit)
+
 ## Installation Instructions
 
 Before starting the installation of DocsaidKit, ensure you have met the following prerequisites:
@@ -232,54 +238,6 @@ The method to run tests is as follows:
 ```bash
 python -m pytest tests
 ```
-
-## CI/CD
-
-The **DocsaidKit** project strictly adheres to best practices in Continuous Integration (CI) and Continuous Delivery (CD) to ensure code quality and project stability.
-
-We utilize [GitHub Actions](https://github.com/features/actions) as our primary CI/CD tool, automating the code inspection, testing, and release processes.
-
-### Continuous Integration (CI)
-
-Our CI process ensures that all code submissions and merge requests meet preset quality standards.
-
-Key steps in the CI process include:
-
-1. **Code Checkout**:
-   - Retrieve the latest code, ensuring testing and building are based on the most recent changes.
-
-2. **Environment Setup**:
-   - Set up the running environment based on required Python versions and operating systems.
-
-3. **Dependency Installation**:
-   - Install necessary system dependencies and Python packages in preparation for subsequent testing and building steps.
-
-4. **Code Quality Checks**:
-   - Conduct static analysis of the code using `pylint` for quality and style checks.
-
-5. **Unit and Integration Testing**:
-   - Run unit and integration tests using `pytest` to ensure code functionality and stability.
-   - Generate test coverage reports and feedback coverage information to the development team via GitHub Actions.
-
-### Continuous Delivery (CD)
-
-Our CD process aims to automate the build and release process, ensuring efficient and accurate delivery of new versions to users.
-
-Key steps in the CD process include:
-
-1. **Version Number Update**:
-   - Automatically update the code's version number based on the input version tag.
-
-2. **Build and Packaging**:
-   - Automatically build Python wheel packages for easy distribution and installation.
-   - Use `twine` to upload the built wheel packages to a private repository.
-
-3. **Create Release**:
-   - Create a new release on GitHub, filling in version information and release notes.
-   - Upload the built wheel package as an attachment to the release for user download.
-
-4. **Clean Build Environment**:
-   - Clean up temporary files and directories generated during the build, maintaining a tidy build environment.
 
 ---
 

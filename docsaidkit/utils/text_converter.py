@@ -19,7 +19,7 @@ class TextDecoder:
     def __init__(
         self,
         *,
-        chars_dict: Dict[str],
+        chars_dict: Dict[str, int],
         decode_mode: Optional[Union[DecodeMode, str, int]] = DecodeMode.Default
     ):
         self.chars_dict = chars_dict
@@ -43,7 +43,7 @@ class TextEncoder:
     def __init__(
         self,
         *,
-        chars_dict: Dict[str],
+        chars_dict: Dict[str, int],
         max_length: int = 35
     ):
         self.chars_dict = chars_dict

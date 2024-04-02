@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -44,23 +44,39 @@ class TextEncoder:
         self,
         *,
         chars_dict: Dict[str, int],
-        max_length: int = 35
+        max_length: int = 35,
+        special_tokens: Tuple[str] = None
     ):
+        self.max_length = max_length
         self.chars_dict = chars_dict
         self.chars = {v: k for k, v in self.chars_dict.items()}
-        self.max_length = max_length
+        self.special_tokens = special_tokens if special_tokens is not None \
+            else ('[BOS]', '[SEP]', '[EOS]', '[UNK]', '[PAD]')
 
     def encode(self, chars_list: List[Union[str, List[str]]]):
         encodes = np.zeros((len(chars_list), self.max_length), dtype=np.int64)
         n_strs = np.array([0] * len(chars_list), dtype=np.int32)
         for i, chars in enumerate(chars_list):
             chars_index = []
-            for c in chars:
-                if c not in self.chars_dict:
-                    c = '[UNK]'
-                chars_index.append(self.chars_dict[c])
+            pos = 0
+            while pos < len(chars):
+                matched = False
+                # 檢查是否匹配特殊符號
+                for token in self.special_tokens:
+                    if chars.startswith(token, pos):
+                        chars_index.append(self.chars_dict[token])
+                        pos += len(token)
+                        matched = True
+                        break
+                # 如果不是特殊符號，處理單個字符
+                if not matched:
+                    c = chars[pos]
+                    if c not in self.chars_dict:
+                        c = '[UNK]'
+                    chars_index.append(self.chars_dict[c])
+                    pos += 1
 
-            n_str = min(len(chars), self.max_length)
+            n_str = min(len(chars_index), self.max_length)
             encodes[i, :n_str] = chars_index[:n_str]
             n_strs[i] = n_str
 

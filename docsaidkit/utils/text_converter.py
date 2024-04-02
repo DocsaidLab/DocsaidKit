@@ -37,6 +37,9 @@ class TextDecoder:
 
         return chars_list
 
+    def __call__(self, *args, **kwargs) -> List[List[str]]:
+        return self.decode(*args, **kwargs)
+
 
 class TextEncoder:
 
@@ -53,7 +56,7 @@ class TextEncoder:
         self.special_tokens = special_tokens if special_tokens is not None \
             else ('[BOS]', '[SEP]', '[EOS]', '[UNK]', '[PAD]')
 
-    def encode(self, chars_list: List[Union[str, List[str]]]):
+    def encode(self, chars_list: List[Union[str, List[str]]]) -> Tuple[np.ndarray, np.ndarray]:
         encodes = np.zeros((len(chars_list), self.max_length), dtype=np.int64)
         n_strs = np.array([0] * len(chars_list), dtype=np.int32)
         for i, chars in enumerate(chars_list):
@@ -81,3 +84,6 @@ class TextEncoder:
             n_strs[i] = n_str
 
         return encodes, n_strs
+
+    def __call__(self, *args, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+        return self.encode(*args, **kwargs)

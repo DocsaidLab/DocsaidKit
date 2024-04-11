@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import pytest
-
 from docsaidkit import (BORDER, Box, Boxes, gaussianblur, imbinarize,
                         imcropbox, imcropboxes, imcvtcolor, meanblur,
                         medianblur, pad)
@@ -75,7 +74,8 @@ def test_pad_constant_gray():
     pad_size = 10
     fill_value = 128
     padded_img = pad(img, pad_size=pad_size, fill_value=fill_value)
-    assert padded_img.shape == (img.shape[0] + 2 * pad_size, img.shape[1] + 2 * pad_size)
+    assert padded_img.shape == (
+        img.shape[0] + 2 * pad_size, img.shape[1] + 2 * pad_size)
     assert np.all(padded_img[:pad_size, :] == fill_value)
     assert np.all(padded_img[-pad_size:, :] == fill_value)
     assert np.all(padded_img[:, :pad_size] == fill_value)
@@ -90,7 +90,8 @@ def test_pad_constant_color():
     pad_size = 5
     fill_value = (255, 0, 0)  # 紅色
     padded_img = pad(img, pad_size=pad_size, fill_value=fill_value)
-    assert padded_img.shape == (img.shape[0] + 2 * pad_size, img.shape[1] + 2 * pad_size, img.shape[2])
+    assert padded_img.shape == (
+        img.shape[0] + 2 * pad_size, img.shape[1] + 2 * pad_size, img.shape[2])
     assert np.all(padded_img[:pad_size, :, :] == fill_value)
     assert np.all(padded_img[-pad_size:, :, :] == fill_value)
     assert np.all(padded_img[:, :pad_size, :] == fill_value)
@@ -104,7 +105,8 @@ def test_pad_replicate():
     # 測試邊緣複製填充
     pad_size = (5, 10)
     padded_img = pad(img, pad_size=pad_size, pad_mode=BORDER.REPLICATE)
-    assert padded_img.shape == (img.shape[1] + 2 * pad_size[1], img.shape[0] + 2 * pad_size[0], img.shape[2])
+    assert padded_img.shape == (
+        img.shape[0] + 2 * pad_size[0], img.shape[1] + 2 * pad_size[1], img.shape[2])
 
 
 def test_pad_reflect():
@@ -114,7 +116,11 @@ def test_pad_reflect():
     # 測試邊緣反射填充
     pad_size = (0, 10, 15, 5)
     padded_img = pad(img, pad_size=pad_size, pad_mode=BORDER.REFLECT)
-    assert padded_img.shape == (img.shape[1] + pad_size[2] + pad_size[3], img.shape[0] + pad_size[0] + pad_size[1], img.shape[2])
+    assert padded_img.shape == (
+        img.shape[0] + pad_size[0] + pad_size[1],
+        img.shape[1] + pad_size[2] + pad_size[3],
+        img.shape[2]
+    )
 
 
 def test_pad_invalid_input():
@@ -255,6 +261,7 @@ def test_imbinarize_gray_image():
     assert binarized_img.shape == img.shape
     assert np.unique(binarized_img).tolist() == [0, 255]
 
+
 def test_imbinarize_color_image():
     # 測試用的彩色圖片
     img = np.random.randint(0, 256, size=(100, 100, 3), dtype=np.uint8)
@@ -269,9 +276,9 @@ def test_imbinarize_color_image():
     assert binarized_img.shape == img.shape[:-1]
     assert np.unique(binarized_img).tolist() == [0, 255]
 
+
 def test_imbinarize_invalid_input():
     # 測試不支援的圖片維度
     img = np.random.randint(0, 256, size=(100, 100, 100), dtype=np.uint8)
     with pytest.raises(cv2.error):
         imbinarize(img)
-

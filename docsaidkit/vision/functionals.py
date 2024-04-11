@@ -228,10 +228,10 @@ def pad(
     if isinstance(pad_size, int):
         left = right = top = bottom = pad_size
     elif len(pad_size) == 2:
-        left = right = pad_size[0]
-        top = bottom = pad_size[1]
+        top = bottom = pad_size[0]
+        left = right = pad_size[1]
     elif len(pad_size) == 4:
-        left, right, top, bottom = pad_size
+        top, bottom, left, right = pad_size
     else:
         raise ValueError(
             f'pad_size is not an int, a tuple with 2 ints, or a tuple with 4 ints.')
@@ -312,10 +312,10 @@ def imcropbox(
 
     if use_pad:
         padding = (
-            -x1 if x1 < 0 else 0,
-            x2 - im_w if x2 > im_w else 0,
             -y1 if y1 < 0 else 0,
             y2 - im_h if y2 > im_h else 0,
+            -x1 if x1 < 0 else 0,
+            x2 - im_w if x2 > im_w else 0,
         )
         out = pad(out, padding, 0, BORDER.CONSTANT)
 

@@ -308,7 +308,7 @@
 
 這些函數都非常簡單易用。只需將你的影像、所需的核大小和核的結構形式作為參數傳入對應的函數，然後進行相應的形態學操作。
 
-例如，如果你想對一個影像 `img` 進行膨脹操作，只需調用 `imdilate(img)`。如果你想使用其他核大小或形狀，只需修改 `ksize` 和 `kstruct` 參數。
+例如：如果你想對一個影像 `img` 進行膨脹操作，只需調用 `imdilate(img)`。如果你想使用其他核大小或形狀，只需修改 `ksize` 和 `kstruct` 參數。
 
 ## [IP Camera (`ipcam`)](../docsaidkit/vision/ipcam/)
 
@@ -386,7 +386,7 @@
 
 如果您想從一個視頻中提取帧，只需調用 `video2frames` 函數並傳入視頻的路徑以及其他參數。
 
-例如，要從 `my_video.mp4` 提取帧，每秒2帧，從第1秒開始到第10秒結束，可以這樣做：
+例如：要從 `my_video.mp4` 提取帧，每秒2帧，從第1秒開始到第10秒結束，可以這樣做：
 ```python
 frames = video2frames('my_video.mp4', frame_per_sec=2, start_sec=1, end_sec=10)
 ```
@@ -466,4 +466,3 @@ frames = video2frames('my_video.mp4')
   - `color`: 線條或文字的顏色。
   - `thickness`: 線條厚度。
   - `**kwargs`: 其他參數。
-

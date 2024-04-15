@@ -132,7 +132,7 @@ docker run --gpus all,capabilities=utilities --rm debian:stretch nvidia-smi
 
 如果在Dockerfile內設置了環境變數，則不需要在docker run命令行上設置它們。
 
-例如，如果您正在創建自己的自定義CUDA容器，您應該使用以下內容：
+例如：如果您正在創建自己的自定義CUDA容器，您應該使用以下內容：
 
 ```
 ENV NVIDIA_VISIBLE_DEVICES all

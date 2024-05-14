@@ -21,7 +21,7 @@
 
 ## 快速開始
 
-詳細功能和使用方法請參考 [**DocsaidKit Documents**](https://docsaid.org/docsaidkit/intro)。
+詳細功能和使用方法請參考 [**DocsaidKit Documents**](https://docsaid.org/docs/docsaidkit/intro/)。
 
 ## 測試
 

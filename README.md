@@ -21,7 +21,7 @@ The positioning of this project is an image processing and deep learning toolbox
 
 ## Quick Start
 
-For detailed functionalities and usage methods, please refer to the [**DocsaidKit Documents**](https://docsaid.org/en/docsaidkit/intro).
+For detailed functionalities and usage methods, please refer to the [**DocsaidKit Documents**](https://docsaid.org/en/docs/docsaidkit/intro/).
 
 ## Testing
 

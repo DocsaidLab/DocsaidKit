@@ -28,10 +28,20 @@ class TextDecoder:
 
     def decode(self, encode: List[np.ndarray]) -> List[List[str]]:
         encode = np.array(encode)
-        if self.decode_mode in [DecodeMode.Default, DecodeMode.CTC]:
+        if self.decode_mode == DecodeMode.CTC:
             masks = (encode != np.roll(encode, 1)) & (encode != 0)
-        elif self.decode_mode == DecodeMode.Normal:
-            masks = encode != 0
+        elif self.decode_mode in [DecodeMode.Default, DecodeMode.Normal]:
+            masks = []
+            for row in encode:
+                eos_index = np.where(row == self.chars_dict["<EOS>"])[0]
+                if eos_index.size > 0:
+                    mask = np.zeros_like(row, dtype=bool)
+                    mask[:eos_index[0]] = True
+                else:
+                    mask = np.ones_like(row, dtype=bool)
+                mask = mask & (row != self.chars_dict["<PAD>"])
+                masks.append(mask)
+
         chars_list = [''.join([self.chars[idx] for idx in e[m]])
                       for e, m in zip(encode, masks)]
 
@@ -54,7 +64,7 @@ class TextEncoder:
         self.chars_dict = chars_dict
         self.chars = {v: k for k, v in self.chars_dict.items()}
         self.special_tokens = special_tokens if special_tokens is not None \
-            else ('[BOS]', '[SEP]', '[EOS]', '[UNK]', '[PAD]')
+            else ("<BOS>", "<SEP>", "<EOS>", "<UNK>", "<PAD>")
 
     def encode(self, chars_list: List[Union[str, List[str]]]) -> Tuple[np.ndarray, np.ndarray]:
         encodes = np.zeros((len(chars_list), self.max_length), dtype=np.int64)
@@ -75,12 +85,23 @@ class TextEncoder:
                 if not matched:
                     c = chars[pos]
                     if c not in self.chars_dict:
-                        c = '[UNK]'
+                        c = "<UNK>"
                     chars_index.append(self.chars_dict[c])
                     pos += 1
 
             n_str = min(len(chars_index), self.max_length)
             encodes[i, :n_str] = chars_index[:n_str]
+
+            # 最後一個字符加上 <EOS>，如果長度超過，則取代最後一個字符
+            if encodes[i, n_str - 1] == self.chars_dict["<EOS>"]:
+                n_str -= 1
+            else:
+                if n_str < self.max_length:
+                    encodes[i, n_str] = self.chars_dict["<EOS>"]
+                else:
+                    encodes[i, n_str - 1] = self.chars_dict["<EOS>"]
+                    n_str -= 1
+
             n_strs[i] = n_str
 
         return encodes, n_strs

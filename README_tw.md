@@ -21,7 +21,7 @@
 
 ## 技術文件
 
-套件安裝和使用的方式，請參閱 [**DocsaidKit Documents**](https://docsaid.org/docs/docsaidkit/intro/)。
+套件安裝和使用的方式，請參閱 [**DocsaidKit Documents**](https://docsaid.org/docs/category/docsaidkit)。
 
 在那裡你可以找到所有有關本專案的詳細資訊。
 

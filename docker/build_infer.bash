@@ -1,3 +1,3 @@
 docker build \
-    -f docker/Dockerfile_infer \
+    -f docker/infer.Dockerfile \
     -t docsaid_infer_image .

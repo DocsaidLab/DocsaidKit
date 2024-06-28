@@ -254,7 +254,7 @@ def draw_text(
 
     offset_y = int(0.5 * (font.size - text_height) - offset[1])
     location = location + (0, offset_y)
-    kwargs.update({'fill': color})
+    kwargs.update({'fill': (color[2], color[1], color[0])})
     draw.text(location, text, font=font, **kwargs)
     img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 

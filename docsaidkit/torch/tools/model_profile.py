@@ -1,9 +1,11 @@
 # Ref from: https://github.com/sovrasov/flops-counter.pytorch
+from calflops import calculate_flops
 from ptflops import get_model_complexity_info
 
 from .cpuinfo import cpuinfo
 
-__all__ = ['get_model_complexity_info', 'get_cpu_gflops', 'get_meta_info']
+__all__ = ['get_model_complexity_info',
+           'get_cpu_gflops', 'get_meta_info', 'calculate_flops']
 
 
 def get_cpu_gflops(one_cpu_core: bool = True) -> float:

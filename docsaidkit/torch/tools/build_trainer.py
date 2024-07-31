@@ -127,18 +127,6 @@ def build_trainer(
     # root dir
     root_dir = DIR / cfg.name / cfg.name_ind
 
-    # Add the directory to .gitignore if it exists
-    if (DIR.parent / '.gitignore').is_file():
-        with open(str(DIR.parent / '.gitignore'), 'r') as file:
-            content = file.read()
-
-        # 檢查是否已包含所需的文本
-        entry = f'\n{cfg.name}/\n'
-        if entry not in content:
-            # 如果没有包含，则將其添加到 .gitignore 文件
-            with open(str(DIR.parent / '.gitignore'), 'a') as f:
-                f.write(f'\n{cfg.name}/\n')
-
     cfg.update({'root_dir': str(root_dir)})
     cfg.logger.options.update({
         'save_dir': str(root_dir / cfg.logger.options.save_dir)

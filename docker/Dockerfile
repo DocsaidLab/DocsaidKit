@@ -13,7 +13,7 @@ RUN mkdir -p /app/matplotlib_config /app/transformers_cache
 
 # 設置環境變量
 ENV MPLCONFIGDIR /app/matplotlib_config
-ENV TRANSFORMERS_CACHE /app/transformers_cache
+ENV HF_HOME /app/transformers_cache
 
 # 確保目錄具有正確的權限
 RUN chmod -R 777 /app/matplotlib_config /app/transformers_cache
@@ -62,8 +62,9 @@ RUN cd /usr/local/DocsaidKit && python setup.py bdist_wheel && \
     python -m pip install $(ls dist/*.whl | sed 's/$/[torch]/') && \
     rm -rf /usr/local/DocsaidKit
 
-# Fixed 4.8.0.76 import error
-RUN python -m pip install opencv-python==4.8.0.74
+# opencv-fixer
+RUN pip install opencv-fixer
+RUN python -c "from opencv_fixer import AutoFix; AutoFix()"
 
 # Preload data
 RUN python -c "import docsaidkit"

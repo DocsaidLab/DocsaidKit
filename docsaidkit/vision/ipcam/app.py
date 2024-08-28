@@ -39,18 +39,10 @@ class WebDemo:
 
         @ app.route('/video_feed')
         def _video_feed():
-            if isinstance(camera_ip, int):
-                return Response(
-                    gen(cap=IpcamCapture(camera_ip, color_base),
-                        pipelines=pipelines),
-                    mimetype='multipart/x-mixed-replace; boundary=frame'
-                )
-            else:
-                return Response(
-                    gen(cap=IpcamCapture(
-                        f'http://{camera_ip}:8080/video', color_base), pipelines=pipelines),
-                    mimetype='multipart/x-mixed-replace; boundary=frame'
-                )
+            return Response(
+                gen(cap=IpcamCapture(camera_ip, color_base), pipelines=pipelines),
+                mimetype='multipart/x-mixed-replace; boundary=frame'
+            )
 
         self.app = app
 

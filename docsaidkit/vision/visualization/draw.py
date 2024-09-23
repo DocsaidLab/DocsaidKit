@@ -392,23 +392,25 @@ def draw_mask(
         np.ndarray: The image with the drawn mask.
     """
 
-    img = img.copy()
+    # Ensure the input image has 3 channels
     if img.ndim == 2:
         img = np.stack([img] * 3, axis=-1)
+    else:
+        img = img.copy()  # Avoid modifying the original image
 
-    if mask.ndim != 2:
-        raise ValueError("Mask should be a 2D array.")
-
+    # Normalize mask if required
     if min_max_normalize:
         mask = mask.astype(np.float32)
         mask = (mask - mask.min()) / (mask.max() - mask.min())
+        mask = (mask * 255).astype(np.uint8)
+    else:
+        mask = mask.astype(np.uint8)  # Ensure mask is uint8 for color mapping
 
-    if mask.dtype == np.float32:
-        mask = np.uint8(np.clip(mask * 255, 0, 255))
-
-    if mask.dtype != np.uint8:
-        raise ValueError(
-            "Mask should be a 2D array of type np.uint8 or np.float32.")
+    # Ensure mask is single-channel before applying color map
+    if mask.ndim == 3 and mask.shape[-1] == 3:
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+    elif mask.ndim != 2:
+        raise ValueError("Mask must be either 2D or 3-channel image")
 
     mask = imresize(mask, size=(img.shape[0], img.shape[1]))
     mask = cv2.applyColorMap(mask, colormap)

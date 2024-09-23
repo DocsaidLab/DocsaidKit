@@ -41,10 +41,10 @@ jobs:
           git commit -m "[C] Update python version"
 
       - name: Commit & Push changes of Version Updating
-        uses: actions-js/push@master
+        uses: ad-m/github-push-action@master
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.event.inputs.branch }}
-          github_token: ${{ secrets.CI_PAT }}
 
       - name: Build wheel
         run: |

@@ -21,7 +21,7 @@ This project is a toolbox for image processing and deep learning, primarily cons
 
 ## Documentation
 
-For installation and usage instructions, please refer to the [**DocsaidKit Documents**](https://docsaid.org/en/docs/category/docsaidkit).
+For installation and usage instructions, please refer to the [**DocsaidKit Documents**](https://docsaid.org/en/docs/docsaidkit).
 
 Here, you will find all the detailed information about this project.
 

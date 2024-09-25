@@ -4,7 +4,7 @@ from warnings import warn
 
 import cv2
 import numpy as np
-from shapely.geometry import JOIN_STYLE
+from shapely.geometry import JOIN_STYLE, MultiPolygon
 from shapely.geometry import Polygon as _Polygon_shapely
 
 __all__ = [
@@ -208,7 +208,10 @@ class Polygon:
         poly = _Polygon_shapely(self._array).buffer(
             distance, join_style=join_style)
 
-        if not poly.exterior.is_empty:
+        if isinstance(poly, MultiPolygon):
+            poly = max(poly.geoms, key=lambda p: p.area)
+
+        if isinstance(poly, Polygon) and not poly.exterior.is_empty:
             pts = np.zeros_like(self._array)
             for x, y in zip(*poly.exterior.xy):
                 pt = np.array([x, y])

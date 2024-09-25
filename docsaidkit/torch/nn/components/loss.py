@@ -11,7 +11,7 @@ __all__ = [
     'build_loss', 'AWingLoss', 'WeightedAWingLoss',
     'BCELoss', 'BCEWithLogitsLoss', 'CrossEntropyLoss',
     'CTCLoss', 'KLDivLoss', 'L1Loss', 'MSELoss', 'SmoothL1Loss',
-    'ArcFace', 'CosFace'
+    'ArcFace', 'CosFace', 'LogCoshDiceLoss',
 ]
 
 
@@ -128,3 +128,22 @@ class CosFace(nn.Module):
         logits[index, labels[index].view(-1)] -= self.m
         logits *= self.s
         return logits
+
+
+class LogCoshDiceLoss(nn.Module):
+
+    def __init__(self, smooth=1):
+        super().__init__()
+        self.smooth = smooth
+
+    def dice_loss(self, input, target):
+        input_flat = input.view(-1)
+        target_flat = target.view(-1)
+        intersection = (input_flat * target_flat).sum()
+        dice_loss = 1 - (2. * intersection + self.smooth) / \
+            (input_flat.sum() + target_flat.sum() + self.smooth)
+        return dice_loss
+
+    def forward(self, input, target):
+        dice_loss = self.dice_loss(input, target)
+        return torch.log(torch.cosh(dice_loss))

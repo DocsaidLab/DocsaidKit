@@ -3,9 +3,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, List
 
-import docsaidkit as D
 import numpy as np
 import pytest
+
+import docsaidkit as D
 from docsaidkit import (DataclassCopyMixin, DataclassToJsonMixin,
                         EnumCheckMixin, dict_to_jsonable)
 
@@ -20,7 +21,7 @@ data = [
             polygon=D.Polygon([(0, 0), (1, 0), (1, 1)]),
             polygons=D.Polygons([[(0, 0), (1, 0), (1, 1)]]),
             np_bool=np.bool_(True),
-            np_float=np.float_(1),
+            np_float=np.float64(1),
             np_number=np.array(1),
             np_array=np.array([1, 2]),
             image=MockImage,

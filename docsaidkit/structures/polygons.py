@@ -211,7 +211,7 @@ class Polygon:
         if isinstance(poly, MultiPolygon):
             poly = max(poly.geoms, key=lambda p: p.area)
 
-        if isinstance(poly, Polygon) and not poly.exterior.is_empty:
+        if isinstance(poly, _Polygon_shapely) and not poly.exterior.is_empty:
             pts = np.zeros_like(self._array)
             for x, y in zip(*poly.exterior.xy):
                 pt = np.array([x, y])

@@ -24,7 +24,7 @@ _Thickness = Union[int, float, np.ndarray]
 _Thicknesses = Union[List[_Thickness], _Thickness, np.ndarray]
 
 if not (font_path := DIR / "NotoSansMonoCJKtc-VF.ttf").exists():
-    file_id = "2fcpN25LBNkw3eN"
+    file_id = "DiSqmnitNm3ZTPj"
     download_from_docsaid(file_id, font_path.name, str(font_path))
 
 

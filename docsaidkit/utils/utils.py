@@ -78,5 +78,5 @@ def gen_download_cmd(file_id: str, target: str):
 
 def download_from_docsaid(file_id: str, file_name: str, target: str):
     os.system(
-        f"wget https://docsaidlab.com/s/{file_id}/download/{file_name} -O {target}"
+        f"wget https://cloud.docsaid.org/s/{file_id}/download/{file_name} -O {target}"
     )

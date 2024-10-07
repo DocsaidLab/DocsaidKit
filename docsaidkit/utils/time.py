@@ -105,13 +105,14 @@ class Timer:
         """ start timer """
         if self.desc is not None and self.verbose:
             print(colorstr(self.desc, 'yellow'))
-        self.time = time.process_time()
+        self.time = time.perf_counter()
 
     def toc(self, verbose=False):
         """ get time lag from start """
         if getattr(self, 'time', None) is None:
-            raise ValueError(f'The timer has not been started. Tic the timer first.')
-        total = round(time.process_time() - self.time, self.precision)
+            raise ValueError(
+                f'The timer has not been started. Tic the timer first.')
+        total = round(time.perf_counter() - self.time, self.precision)
 
         if verbose or self.verbose:
             print(colorstr(f'Cost: {total} sec', 'white'))
